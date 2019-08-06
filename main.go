@@ -36,7 +36,7 @@ func listImageReferences(filepath string) ([]string, error) {
 }
 
 func main() {
-	var scanpath string
+	var scanpath, registry string
 	app := cli.NewApp()
 	app.Name = "korp"
 	app.Usage = "push images to a corporate registry based on Kubernetes yaml files"
@@ -51,6 +51,81 @@ func main() {
 					Name:        "files, f",
 					Value:       ".",
 					Usage:       "path of yaml files to scan",
+					Destination: &scanpath,
+				},
+			},
+			Action: func(c *cli.Context) error {
+				paths, _ := listYamlFiles(scanpath)
+				for _, yamlPath := range paths {
+					imageRefs, _ := listImageReferences(yamlPath)
+					if len(imageRefs) > 0 {
+						fmt.Println(listImageReferences(yamlPath))
+					}
+				}
+				return nil
+			},
+		},
+		{
+			Name:    "pull",
+			Aliases: []string{"p"},
+			Usage:   "pulls referenced images to the local docker registry",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:        "path, p",
+					Value:       ".",
+					Usage:       "path of the kustomize file",
+					Destination: &scanpath,
+				},
+			},
+			Action: func(c *cli.Context) error {
+				paths, _ := listYamlFiles(scanpath)
+				for _, yamlPath := range paths {
+					imageRefs, _ := listImageReferences(yamlPath)
+					if len(imageRefs) > 0 {
+						fmt.Println(listImageReferences(yamlPath))
+					}
+				}
+				return nil
+			},
+		},
+		{
+			Name:    "push",
+			Aliases: []string{"u"},
+			Usage:   "tags images and pushes them to the corporate registry",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:        "path, p",
+					Value:       ".",
+					Usage:       "path of the kustomize file",
+					Destination: &scanpath,
+				},
+				cli.StringFlag{
+					Name:        "registry, r",
+					Value:       "docker.io",
+					Usage:       "name of the corporate registry to use",
+					Destination: &registry,
+				},
+			},
+			Action: func(c *cli.Context) error {
+				paths, _ := listYamlFiles(scanpath)
+				for _, yamlPath := range paths {
+					imageRefs, _ := listImageReferences(yamlPath)
+					if len(imageRefs) > 0 {
+						fmt.Println(listImageReferences(yamlPath))
+					}
+				}
+				return nil
+			},
+		},
+		{
+			Name:    "patch",
+			Aliases: []string{"a"},
+			Usage:   "patches the image references in all yaml files in the path",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:        "path, p",
+					Value:       ".",
+					Usage:       "path of the kustomize file and the yaml files",
 					Destination: &scanpath,
 				},
 			},
