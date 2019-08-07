@@ -10,6 +10,19 @@ import (
 	"github.com/urfave/cli"
 )
 
+func Scan(path *string) func(c *cli.Context) error {
+	return func(c *cli.Context) error {
+		paths, _ := listYamlFiles(*path)
+		for _, yamlPath := range paths {
+			imageRefs, _ := listImageReferences(yamlPath)
+			if len(imageRefs) > 0 {
+				fmt.Println(listImageReferences(yamlPath))
+			}
+		}
+		return nil
+	}
+}
+
 func listYamlFiles(rootpath string) ([]string, error) {
 	var files []string
 	var yamlRegex = regexp.MustCompile(`(?mi).*\.(yaml|yml)`)
@@ -32,17 +45,4 @@ func listImageReferences(filepath string) ([]string, error) {
 		}
 	}
 	return imageRefs, err
-}
-
-func Scan(path *string) func(c *cli.Context) error {
-	return func(c *cli.Context) error {
-		paths, _ := listYamlFiles(*path)
-		for _, yamlPath := range paths {
-			imageRefs, _ := listImageReferences(yamlPath)
-			if len(imageRefs) > 0 {
-				fmt.Println(listImageReferences(yamlPath))
-			}
-		}
-		return nil
-	}
 }
