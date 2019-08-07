@@ -1,39 +1,12 @@
 package main
 
 import (
-	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
-	"path/filepath"
-	"regexp"
 
+	"github.com/swisscom/korp/actions"
 	"github.com/urfave/cli"
 )
-
-func listYamlFiles(rootpath string) ([]string, error) {
-	var files []string
-	var yamlRegex = regexp.MustCompile(`(?mi).*\.(yaml|yml)`)
-	err := filepath.Walk(rootpath, func(path string, info os.FileInfo, err error) error {
-		if !info.IsDir() && yamlRegex.MatchString(info.Name()) {
-			files = append(files, path)
-		}
-		return nil
-	})
-	return files, err
-}
-
-func listImageReferences(filepath string) ([]string, error) {
-	data, err := ioutil.ReadFile(filepath)
-	var imageRefs []string
-	var imageRefRegex = regexp.MustCompile(`(?m)image:\s*(?P<image>[^{\s]+)\s+`)
-	for _, match := range imageRefRegex.FindAllStringSubmatch(string(data), -1) {
-		if len(match) > 1 {
-			imageRefs = append(imageRefs, match[1])
-		}
-	}
-	return imageRefs, err
-}
 
 func main() {
 	var scanpath, registry string
@@ -53,17 +26,14 @@ func main() {
 					Usage:       "path of yaml files to scan",
 					Destination: &scanpath,
 				},
+				cli.StringFlag{
+					Name:        "registry, r",
+					Value:       "docker.io",
+					Usage:       "name of the corporate registry to use",
+					Destination: &registry,
+				},
 			},
-			Action: func(c *cli.Context) error {
-				paths, _ := listYamlFiles(scanpath)
-				for _, yamlPath := range paths {
-					imageRefs, _ := listImageReferences(yamlPath)
-					if len(imageRefs) > 0 {
-						fmt.Println(listImageReferences(yamlPath))
-					}
-				}
-				return nil
-			},
+			Action: actions.Scan(&scanpath),
 		},
 		{
 			Name:    "pull",
@@ -77,16 +47,7 @@ func main() {
 					Destination: &scanpath,
 				},
 			},
-			Action: func(c *cli.Context) error {
-				paths, _ := listYamlFiles(scanpath)
-				for _, yamlPath := range paths {
-					imageRefs, _ := listImageReferences(yamlPath)
-					if len(imageRefs) > 0 {
-						fmt.Println(listImageReferences(yamlPath))
-					}
-				}
-				return nil
-			},
+			Action: actions.Pull(&scanpath),
 		},
 		{
 			Name:    "push",
@@ -106,16 +67,7 @@ func main() {
 					Destination: &registry,
 				},
 			},
-			Action: func(c *cli.Context) error {
-				paths, _ := listYamlFiles(scanpath)
-				for _, yamlPath := range paths {
-					imageRefs, _ := listImageReferences(yamlPath)
-					if len(imageRefs) > 0 {
-						fmt.Println(listImageReferences(yamlPath))
-					}
-				}
-				return nil
-			},
+			Action: actions.Push(&scanpath),
 		},
 		{
 			Name:    "patch",
@@ -129,16 +81,7 @@ func main() {
 					Destination: &scanpath,
 				},
 			},
-			Action: func(c *cli.Context) error {
-				paths, _ := listYamlFiles(scanpath)
-				for _, yamlPath := range paths {
-					imageRefs, _ := listImageReferences(yamlPath)
-					if len(imageRefs) > 0 {
-						fmt.Println(listImageReferences(yamlPath))
-					}
-				}
-				return nil
-			},
+			Action: actions.Patch(&scanpath),
 		},
 	}
 
