@@ -33,7 +33,7 @@ func main() {
 					Destination: &registry,
 				},
 			},
-			Action: actions.Scan(&scanpath),
+			Action: actions.Scan(&scanpath, &registry),
 		},
 		{
 			Name:    "pull",
