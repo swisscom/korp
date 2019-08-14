@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	var scanpath, registry string
+	var scanpath, registry, output string
 	app := cli.NewApp()
 	app.Name = "korp"
 	app.Usage = "push images to a corporate registry based on Kubernetes yaml files"
@@ -32,8 +32,14 @@ func main() {
 					Usage:       "name of the corporate registry to use",
 					Destination: &registry,
 				},
+				cli.StringFlag{
+					Name:        "output, o",
+					Value:       ".",
+					Usage:       "path of the kustomization file to be written",
+					Destination: &output,
+				},
 			},
-			Action: actions.Scan(&scanpath, &registry),
+			Action: actions.Scan(&scanpath, &registry, &output),
 		},
 		{
 			Name:    "pull",

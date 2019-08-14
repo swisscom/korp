@@ -15,7 +15,7 @@ import (
 
 const imageNameTagRegex = "(?m)([^:]+):?(.*)"
 
-func Scan(path, registry *string) func(c *cli.Context) error {
+func Scan(path, registry, output *string) func(c *cli.Context) error {
 	return func(c *cli.Context) error {
 		kustomization := types.Kustomization{}
 		typeMeta := types.TypeMeta{
@@ -43,7 +43,7 @@ func Scan(path, registry *string) func(c *cli.Context) error {
 		}
 		images = removeDuplicateImages(images)
 		kustomization.Images = images
-		outFileName, _ := filepath.Abs("./kustomization.yaml")
+		outFileName, _ := filepath.Abs(*output + "/kustomization.yaml")
 		yamlOutFile, _ := yaml.Marshal(kustomization)
 		ioutil.WriteFile(outFileName, yamlOutFile, 0644)
 		return nil
