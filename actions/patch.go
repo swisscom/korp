@@ -8,7 +8,7 @@ import (
 	"github.com/urfave/cli"
 )
 
-func Patch(scanPath *string) func(c *cli.Context) error {
+func Patch(patchPath, kstPath *string) func(c *cli.Context) error {
 	return func(c *cli.Context) error {
 		errMsg := "Method not yet implemented!"
 		log.Error(errMsg)

@@ -8,7 +8,7 @@ import (
 	"github.com/urfave/cli"
 )
 
-func Push(scanPath *string) func(c *cli.Context) error {
+func Push(kstPath, registry *string) func(c *cli.Context) error {
 
 	return func(c *cli.Context) error {
 		errMsg := "Method not yet implemented!"

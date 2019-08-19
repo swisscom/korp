@@ -10,19 +10,21 @@ import (
 )
 
 const (
-	version = "0.0.1"
+	version  = "0.0.1"
+	logLevel = "debug"
 )
 
 // main -
 func main() {
 
-	setLogLevel("debug")
+	setLogLevel(logLevel)
 
 	app := createApp()
 	addCommands(app)
 	execApp(app)
 }
 
+// setLogLevel - Setup logrus logging level [error, warn, info, debug]
 func setLogLevel(levelStr string) {
 
 	level, err := log.ParseLevel(levelStr)
@@ -45,7 +47,7 @@ func createApp() *cli.App {
 // addCommands - Add commands to CLI application
 func addCommands(app *cli.App) {
 
-	var scanPath, registry, output string
+	var filesPath, registry, output, kstPath string
 	app.Commands = []cli.Command{
 		{
 			Name:    "scan",
@@ -54,11 +56,11 @@ func addCommands(app *cli.App) {
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:        "files, f",
-					Usage:       "path of yaml files to scan (default: current dir)",
+					Usage:       "path to yaml files to scan (default: current dir)",
 					EnvVar:      "KORP_SCAN_FILES",
 					Value:       ".",
 					Required:    false,
-					Destination: &scanPath,
+					Destination: &filesPath,
 				},
 				cli.StringFlag{
 					Name:        "registry, r",
@@ -77,7 +79,7 @@ func addCommands(app *cli.App) {
 					Destination: &output,
 				},
 			},
-			Action: actions.Scan(&scanPath, &registry, &output),
+			Action: actions.Scan(&filesPath, &registry, &output),
 		},
 		{
 			Name:    "pull",
@@ -85,15 +87,15 @@ func addCommands(app *cli.App) {
 			Usage:   "pull images listed in the kustomization file to the local Docker registry",
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:        "path, p",
-					Usage:       "path of the kustomization file (default: current dir)",
-					EnvVar:      "KORP_PULL_PATH",
+					Name:        "kustomization-path, k",
+					Usage:       "path to the kustomization file (default: current dir)",
+					EnvVar:      "KORP_PULL_KST_PATH",
 					Value:       ".",
 					Required:    false,
-					Destination: &scanPath,
+					Destination: &kstPath,
 				},
 			},
-			Action: actions.Pull(&scanPath),
+			Action: actions.Pull(&kstPath),
 		},
 		{
 			Name:    "push",
@@ -101,12 +103,12 @@ func addCommands(app *cli.App) {
 			Usage:   "re-tag original images and push them to the new Docker registry",
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:        "path, p",
-					Usage:       "path of the kustomization file (default: current dir)",
-					EnvVar:      "KORP_PUSH_PATH",
+					Name:        "kustomization-path, k",
+					Usage:       "path to the kustomization file (default: current dir)",
+					EnvVar:      "KORP_PUSH_KST_PATH",
 					Value:       ".",
 					Required:    false,
-					Destination: &scanPath,
+					Destination: &kstPath,
 				},
 				cli.StringFlag{
 					Name:        "registry, r",
@@ -117,7 +119,7 @@ func addCommands(app *cli.App) {
 					Destination: &registry,
 				},
 			},
-			Action: actions.Push(&scanPath),
+			Action: actions.Push(&kstPath, &registry),
 		},
 		{
 			Name:    "patch",
@@ -125,15 +127,23 @@ func addCommands(app *cli.App) {
 			Usage:   "patch all yaml files in the path with images tags to the new Docker registry",
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:        "path, p",
-					Usage:       "path of the kustomization file and the yaml files (default: current dir)",
-					EnvVar:      "KORP_PATCH_PATH",
+					Name:        "files, f",
+					Usage:       "path to yaml files to patch (default: current dir)",
+					EnvVar:      "KORP_PATCH_FILES",
 					Value:       ".",
 					Required:    false,
-					Destination: &scanPath,
+					Destination: &filesPath,
+				},
+				cli.StringFlag{
+					Name:        "kustomization-path, k",
+					Usage:       "path to the kustomization file (default: current dir)",
+					EnvVar:      "KORP_PATCH_KST_PATH",
+					Value:       ".",
+					Required:    false,
+					Destination: &kstPath,
 				},
 			},
-			Action: actions.Patch(&scanPath),
+			Action: actions.Patch(&filesPath, &kstPath),
 		},
 	}
 }
