@@ -47,7 +47,7 @@ func createApp() *cli.App {
 // addCommands - Add commands to CLI application
 func addCommands(app *cli.App) {
 
-	var filesPath, registry, output, kstPath string
+	var filesPath, registry, output, kstPath, patch string
 	app.Commands = []cli.Command{
 		{
 			Name:    "scan",
@@ -110,16 +110,8 @@ func addCommands(app *cli.App) {
 					Required:    false,
 					Destination: &kstPath,
 				},
-				cli.StringFlag{
-					Name:        "registry, r",
-					Usage:       "name of the new Docker registry to push to (default: 'docker.io')",
-					EnvVar:      "KORP_PUSH_REGISTRY",
-					Value:       "docker.io",
-					Required:    false,
-					Destination: &registry,
-				},
 			},
-			Action: actions.Push(&kstPath, &registry),
+			Action: actions.Push(&kstPath),
 		},
 		{
 			Name:    "patch",
@@ -144,6 +136,38 @@ func addCommands(app *cli.App) {
 				},
 			},
 			Action: actions.Patch(&filesPath, &kstPath),
+		},
+		{
+			Name:    "whole",
+			Aliases: []string{"a"},
+			Usage:   "scan >> pull >> push [>> patch]",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:        "files, f",
+					Usage:       "path to yaml files to scan (default: current dir)",
+					EnvVar:      "KORP_WHOLE_FILES",
+					Value:       ".",
+					Required:    false,
+					Destination: &filesPath,
+				},
+				cli.StringFlag{
+					Name:        "registry, r",
+					Usage:       "name of the Docker registry to use (default: 'docker.io')",
+					EnvVar:      "KORP_WHOLE_REGISTRY",
+					Value:       "docker.io",
+					Required:    false,
+					Destination: &registry,
+				},
+				cli.StringFlag{
+					Name:        "patch, p",
+					Usage:       "execute patch phase",
+					EnvVar:      "KORP_WHOLE_PATCH",
+					Value:       "false",
+					Required:    false,
+					Destination: &patch,
+				},
+			},
+			Action: actions.Whole(&filesPath, &registry, &patch),
 		},
 	}
 }

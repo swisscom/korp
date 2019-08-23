@@ -9,9 +9,9 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// PullDockerImage - Pull Docker image
-func PullDockerImage(cli *client.Client, ctx *context.Context,
-	imageName, imageTag string, options *types.ImagePullOptions, normalize bool) error {
+// PushDockerImage - Push Docker image to Docker registry
+func PushDockerImage(cli *client.Client, ctx *context.Context,
+	imageName, imageTag string, options *types.ImagePushOptions, normalize bool) error {
 
 	if normalize {
 		canonicalImageName, normErr := NormalizeImageName(imageName)
@@ -24,14 +24,14 @@ func PullDockerImage(cli *client.Client, ctx *context.Context,
 
 	imageRef := BuildCompleteDockerImage(imageName, imageTag)
 
-	pullReader, pullErr := cli.ImagePull(*ctx, imageRef, *options)
-	if pullErr != nil {
-		// log.Error(pullErr)
-		return pullErr
+	pushReader, pushErr := cli.ImagePush(*ctx, imageRef, *options)
+	if pushErr != nil {
+		// log.Error(pushErr)
+		return pushErr
 	}
-	defer pullReader.Close()
+	defer pushReader.Close()
 
-	_, ioErr := io.Copy(log.StandardLogger().Writer(), pullReader)
+	_, ioErr := io.Copy(log.StandardLogger().Writer(), pushReader)
 	if ioErr != nil {
 		// log.Error(ioErr)
 		return ioErr
