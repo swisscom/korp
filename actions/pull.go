@@ -1,20 +1,17 @@
 package actions
 
 import (
-	"fmt"
+	"errors"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/urfave/cli"
 )
 
-func Pull(path *string) func(c *cli.Context) error {
+func Pull(kstPath *string) func(c *cli.Context) error {
 	return func(c *cli.Context) error {
-		paths, _ := listYamlFiles(*path)
-		for _, yamlPath := range paths {
-			imageRefs, _ := listImageReferences(yamlPath)
-			if len(imageRefs) > 0 {
-				fmt.Println(listImageReferences(yamlPath))
-			}
-		}
-		return nil
+		errMsg := "Method not yet implemented!"
+		log.Error(errMsg)
+		return errors.New(errMsg)
 	}
 }
