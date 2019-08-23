@@ -84,7 +84,7 @@ func addCommands(app *cli.App) {
 		{
 			Name:    "pull",
 			Aliases: []string{"p"},
-			Usage:   "pull images listed in the kustomization file to the local Docker registry",
+			Usage:   "pull Docker images listed in the kustomization file to the local Docker registry",
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:        "kustomization-path, k",
@@ -100,7 +100,7 @@ func addCommands(app *cli.App) {
 		{
 			Name:    "push",
 			Aliases: []string{"u"},
-			Usage:   "re-tag original images and push them to the new Docker registry",
+			Usage:   "re-tag original Docker images and push them to the new Docker registry",
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:        "kustomization-path, k",
@@ -124,7 +124,7 @@ func addCommands(app *cli.App) {
 		{
 			Name:    "patch",
 			Aliases: []string{"a"},
-			Usage:   "patch all yaml files in the path with images tags to the new Docker registry",
+			Usage:   "patch all yaml files in the path with Docker images tags to the new Docker registry",
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:        "files, f",
