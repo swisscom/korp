@@ -14,8 +14,6 @@ const (
 	logLevel = "info"
 )
 
-var debug = false
-
 // main -
 func main() {
 
@@ -23,7 +21,7 @@ func main() {
 
 	app := createApp()
 	addFlags(app)
-	addBefore(app, &debug)
+	addBefore(app)
 	addCommands(app)
 	execApp(app)
 }
@@ -48,9 +46,10 @@ func createApp() *cli.App {
 	return app
 }
 
-func addBefore(app *cli.App, debug *bool) {
+// addBefore - Add a before handler to the app, called before any command
+func addBefore(app *cli.App) {
 	app.Before = func(c *cli.Context) error {
-		if *debug {
+		if c.Bool("debug") {
 			log.SetLevel(log.DebugLevel)
 		}
 		return nil
@@ -61,10 +60,9 @@ func addBefore(app *cli.App, debug *bool) {
 func addFlags(app *cli.App) {
 	app.Flags = []cli.Flag{
 		cli.BoolFlag{
-			Name:        "debug, d",
-			Usage:       "switch on debug log output",
-			EnvVar:      "KORP_LOG_DEBUG",
-			Destination: &debug,
+			Name:   "debug, d",
+			Usage:  "switch on debug log output",
+			EnvVar: "KORP_LOG_DEBUG",
 		},
 	}
 }
