@@ -67,7 +67,7 @@ spec:
         fsGroup: 1001
       initContainers:
       - name: init-chmod-data
-        image: docker.io/bitnami/minideb:latest
+        image: bitnami/minideb:latest
         imagePullPolicy: "Always"
         resources:
           requests:
@@ -89,7 +89,7 @@ spec:
           subPath: ""
       containers:
       - name: postgresql
-        image: docker.io/bitnami/postgresql:11.3.0-debian-9-r38
+        image: bitnami/postgresql:11.3.0-debian-9-r38
         imagePullPolicy: "IfNotPresent"
         resources:
           requests:

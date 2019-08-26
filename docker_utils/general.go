@@ -1,8 +1,7 @@
-package utils
+package docker_utils
 
 import (
 	"regexp"
-	"strings"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -12,14 +11,8 @@ const (
 	defaultReturn              = ""
 )
 
-// TrimQuotes - Remove single or double quotes from a string
-func TrimQuotes(str string) string {
-
-	return strings.Trim(str, "'\"")
-}
-
-// GetDockerImageNameAndTag - Retrieve Docker image name and tag from a string
-func GetDockerImageNameAndTag(imageRef string) (dockerImageName, dockerImageTag string) {
+// ParseDockerImageNameAndTag - Retrieve Docker image name and tag from a string
+func ParseDockerImageNameAndTag(imageRef string) (dockerImageName, dockerImageTag string) {
 
 	var dockerImageNameTagRegex = regexp.MustCompile(dockerImageNameTagRegexStr)
 	regexMatch := dockerImageNameTagRegex.FindStringSubmatch(imageRef)
@@ -38,8 +31,8 @@ func GetDockerImageNameAndTag(imageRef string) (dockerImageName, dockerImageTag 
 	return dockerImageName, dockerImageTag
 }
 
-// GetDockerImageName - Retrieve Docker image name from a string
-func GetDockerImageName(imageRef string) string {
+// ParseDockerImageName - Retrieve Docker image name from a string
+func ParseDockerImageName(imageRef string) string {
 
 	var dockerImageNameTagRegex = regexp.MustCompile(dockerImageNameTagRegexStr)
 	match := dockerImageNameTagRegex.FindStringSubmatch(imageRef)
@@ -50,8 +43,8 @@ func GetDockerImageName(imageRef string) string {
 	return defaultReturn
 }
 
-// GetDockerImageTag - Retrieve Docker image tag from a string
-func GetDockerImageTag(imageRef string) string {
+// ParseDockerImageTag - Retrieve Docker image tag from a string
+func ParseDockerImageTag(imageRef string) string {
 
 	var dockerImageNameTagRegex = regexp.MustCompile(dockerImageNameTagRegexStr)
 	match := dockerImageNameTagRegex.FindStringSubmatch(imageRef)
@@ -60,4 +53,10 @@ func GetDockerImageTag(imageRef string) string {
 	}
 	log.Warn("No Docker image tag found")
 	return defaultReturn
+}
+
+// BuildCompleteDockerImage - Build the complete Docker image name from name and tag
+func BuildCompleteDockerImage(imageName, imageTag string) string {
+
+	return imageName + ":" + imageTag
 }

@@ -9,6 +9,11 @@ import (
 )
 
 func Patch(patchPath, kstPath *string) func(c *cli.Context) error {
+
+	// loac kustomization.yaml
+
+	// TBD
+
 	return func(c *cli.Context) error {
 		errMsg := "Method not yet implemented!"
 		log.Error(errMsg)

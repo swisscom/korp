@@ -15,24 +15,46 @@ A command line tool for pushing docker images into a different Docker registry b
 
 ```
 korp scan -f <path to yaml files> -r <docker registry name>
-cat kustomization.yaml
 ```
 
 `example`
 ```
-korp scan -f ./sample-yaml
+korp scan -f ./sample-yaml -r
 cat kustomization.yaml
 ```
 
 ### Pull
 
-`TODO`
+```
+korp pull -k <path to kustomization.yaml>
+```
+
+`example`
+```
+korp scan -f ./sample-yaml
+korp pull
+docker images
+```
 
 ### Push
 
-`TODO`
+```
+korp pull -k <path to kustomization.yaml>
+```
+
+`example`
+```
+docker run -d --name registry --restart always -p 5000:5000 registry
+korp scan -f ./sample-yaml -r "localhost:5000"
+korp pull
+korp push
+```
 
 ### Patch
+
+`TODO`
+
+### Whole
 
 `TODO`
 
@@ -40,7 +62,24 @@ cat kustomization.yaml
 
 ## TODOs
 
+### features
+
 - [x] scan
 - [ ] pull
 - [ ] push
-- [ ] patch `TBD`
+- [ ] patch
+- [ ] whole
+
+### additionals
+
+- [ ] debug flag / env-var
+  - [ ] using cli framework
+- [x] rename and split utils package
+- [ ] config file
+  - [ ] using cli framework
+
+---
+
+## Issues
+
+* CRD image references not recognized
