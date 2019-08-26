@@ -20,7 +20,7 @@ korp scan -f <path to yaml files> -r <docker registry name>
 `example`
 
 ```
-korp scan -f ./sample-yaml -r
+korp scan -f ./samples/yaml
 cat kustomization.yaml
 ```
 
@@ -33,7 +33,7 @@ korp pull -k <path to kustomization.yaml>
 `example`
 
 ```
-korp scan -f ./sample-yaml
+korp scan -f ./samples/yaml
 korp pull
 docker images
 ```
@@ -48,7 +48,7 @@ korp pull -k <path to kustomization.yaml>
 
 ```
 docker run -d --name registry --restart always -p 5000:5000 registry
-korp scan -f ./sample-yaml -r "localhost:5000"
+korp scan -f ./samples/yaml -r "localhost:5000"
 korp pull
 korp push
 ```
@@ -60,6 +60,12 @@ korp push
 ### All
 
 `TODO`
+
+### Debug mode
+
+```
+korp -d
+```
 
 ---
 
