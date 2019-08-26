@@ -57,7 +57,7 @@ korp push
 
 `TODO`
 
-### Whole
+### All
 
 `TODO`
 
@@ -72,7 +72,7 @@ korp push
 - [x] push
   - [ ] push to registry with auth
 - [ ] patch
-- [ ] whole
+- [ ] all
 
 ### testing
 
