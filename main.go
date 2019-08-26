@@ -138,14 +138,14 @@ func addCommands(app *cli.App) {
 			Action: actions.Patch(&filesPath, &kstPath),
 		},
 		{
-			Name:    "whole",
+			Name:    "all",
 			Aliases: []string{"a"},
 			Usage:   "scan >> pull >> push [>> patch]",
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:        "files, f",
 					Usage:       "path to yaml files to scan (default: current dir)",
-					EnvVar:      "KORP_WHOLE_FILES",
+					EnvVar:      "KORP_ALL_FILES",
 					Value:       ".",
 					Required:    false,
 					Destination: &filesPath,
@@ -153,7 +153,7 @@ func addCommands(app *cli.App) {
 				cli.StringFlag{
 					Name:        "registry, r",
 					Usage:       "name of the Docker registry to use (default: 'docker.io')",
-					EnvVar:      "KORP_WHOLE_REGISTRY",
+					EnvVar:      "KORP_ALL_REGISTRY",
 					Value:       "docker.io",
 					Required:    false,
 					Destination: &registry,
@@ -161,13 +161,13 @@ func addCommands(app *cli.App) {
 				cli.StringFlag{
 					Name:        "patch, p",
 					Usage:       "execute patch phase",
-					EnvVar:      "KORP_WHOLE_PATCH",
+					EnvVar:      "KORP_ALL_PATCH",
 					Value:       "false",
 					Required:    false,
 					Destination: &patch,
 				},
 			},
-			Action: actions.Whole(&filesPath, &registry, &patch),
+			Action: actions.All(&filesPath, &registry, &patch),
 		},
 	}
 }

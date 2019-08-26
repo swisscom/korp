@@ -1,5 +1,5 @@
-
 # korp
+
 A command line tool for pushing docker images into a different Docker registry based on given Kubernetes yaml files.
 
 ## Installation
@@ -18,6 +18,7 @@ korp scan -f <path to yaml files> -r <docker registry name>
 ```
 
 `example`
+
 ```
 korp scan -f ./sample-yaml -r
 cat kustomization.yaml
@@ -30,6 +31,7 @@ korp pull -k <path to kustomization.yaml>
 ```
 
 `example`
+
 ```
 korp scan -f ./sample-yaml
 korp pull
@@ -43,6 +45,7 @@ korp pull -k <path to kustomization.yaml>
 ```
 
 `example`
+
 ```
 docker run -d --name registry --restart always -p 5000:5000 registry
 korp scan -f ./sample-yaml -r "localhost:5000"
@@ -54,7 +57,7 @@ korp push
 
 `TODO`
 
-### Whole
+### All
 
 `TODO`
 
@@ -69,7 +72,7 @@ korp push
 - [x] push
   - [ ] push to registry with auth
 - [ ] patch
-- [ ] whole
+- [ ] all
 
 ### testing
 
@@ -91,4 +94,4 @@ korp push
 
 ## Issues
 
-* CRD image references not recognized
+- CRD image references not recognized
