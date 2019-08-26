@@ -14,9 +14,11 @@ import (
 )
 
 // Push - Push Docker images listed in the kustomization file to the new Docker registry
-func Push(kstPath *string) func(c *cli.Context) error {
+func Push(kstPath *string, debug *bool) func(c *cli.Context) error {
 
 	return func(c *cli.Context) error {
+
+		setLogLevel(debug)
 
 		dockerImages, loadErr := kustomize_utils.LoadKustomizationFile(kstPath)
 		if loadErr != nil {

@@ -18,9 +18,11 @@ import (
 )
 
 // Scan - Collect images referenced in all yaml files in the path and create a kustomization file
-func Scan(scanPath, registry, output *string) func(c *cli.Context) error {
+func Scan(scanPath, registry, output *string, debug *bool) func(c *cli.Context) error {
 
 	return func(c *cli.Context) error {
+
+		setLogLevel(debug)
 
 		dockerImages, dockerErr := retrieveDockerImages(scanPath, registry)
 		if dockerErr != nil {

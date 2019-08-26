@@ -8,9 +8,11 @@ import (
 	"github.com/urfave/cli"
 )
 
-func Patch(patchPath, kstPath *string) func(c *cli.Context) error {
+func Patch(patchPath, kstPath *string, debug *bool) func(c *cli.Context) error {
 
 	return func(c *cli.Context) error {
+
+		setLogLevel(debug)
 
 		// loac kustomization.yaml
 

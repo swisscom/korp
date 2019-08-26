@@ -11,8 +11,10 @@ import (
 
 const (
 	version  = "0.0.1"
-	logLevel = "debug"
+	logLevel = "info"
 )
+
+var debug = false
 
 // main -
 func main() {
@@ -20,6 +22,7 @@ func main() {
 	setLogLevel(logLevel)
 
 	app := createApp()
+	addFlags(app)
 	addCommands(app)
 	execApp(app)
 }
@@ -42,6 +45,18 @@ func createApp() *cli.App {
 	app.Usage = "push images to a corporate registry based on Kubernetes yaml files"
 	app.Version = version
 	return app
+}
+
+// addFlags - Add global flags to CLI application
+func addFlags(app *cli.App) {
+	app.Flags = []cli.Flag{
+		cli.BoolFlag{
+			Name:        "debug, d",
+			Usage:       "switch on debug log output",
+			EnvVar:      "KORP_LOG_DEBUG",
+			Destination: &debug,
+		},
+	}
 }
 
 // addCommands - Add commands to CLI application
@@ -79,7 +94,7 @@ func addCommands(app *cli.App) {
 					Destination: &output,
 				},
 			},
-			Action: actions.Scan(&filesPath, &registry, &output),
+			Action: actions.Scan(&filesPath, &registry, &output, &debug),
 		},
 		{
 			Name:    "pull",
@@ -95,7 +110,7 @@ func addCommands(app *cli.App) {
 					Destination: &kstPath,
 				},
 			},
-			Action: actions.Pull(&kstPath),
+			Action: actions.Pull(&kstPath, &debug),
 		},
 		{
 			Name:    "push",
@@ -111,7 +126,7 @@ func addCommands(app *cli.App) {
 					Destination: &kstPath,
 				},
 			},
-			Action: actions.Push(&kstPath),
+			Action: actions.Push(&kstPath, &debug),
 		},
 		{
 			Name:    "patch",
@@ -135,7 +150,7 @@ func addCommands(app *cli.App) {
 					Destination: &kstPath,
 				},
 			},
-			Action: actions.Patch(&filesPath, &kstPath),
+			Action: actions.Patch(&filesPath, &kstPath, &debug),
 		},
 		{
 			Name:    "whole",
@@ -167,14 +182,13 @@ func addCommands(app *cli.App) {
 					Destination: &patch,
 				},
 			},
-			Action: actions.Whole(&filesPath, &registry, &patch),
+			Action: actions.Whole(&filesPath, &registry, &patch, &debug),
 		},
 	}
 }
 
 // execApp - Execute CLI application
 func execApp(app *cli.App) {
-
 	err := app.Run(os.Args)
 	if err != nil {
 		log.Error(err)

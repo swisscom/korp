@@ -8,9 +8,11 @@ import (
 	"github.com/urfave/cli"
 )
 
-func Whole(filesPath, registry, patch *string) func(c *cli.Context) error {
+func Whole(filesPath, registry, patch *string, debug *bool) func(c *cli.Context) error {
 
 	return func(c *cli.Context) error {
+
+		setLogLevel(debug)
 
 		// OPTIMIZE DOCKER-CLIENT OPENING/CLOSING
 

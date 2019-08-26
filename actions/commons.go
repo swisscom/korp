@@ -21,3 +21,9 @@ func checkDockerDaemon(cli *client.Client, ctx *context.Context) error {
 	}
 	return nil
 }
+
+func setLogLevel(debug *bool) {
+	if *debug {
+		log.SetLevel(log.DebugLevel)
+	}
+}
