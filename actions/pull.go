@@ -2,25 +2,23 @@ package actions
 
 import (
 	"context"
-	"io/ioutil"
-	"path/filepath"
 
 	"github.com/swisscom/korp/docker_utils"
+	"github.com/swisscom/korp/kustomize_utils"
 
 	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/client"
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
-	yaml "gopkg.in/yaml.v2"
-	dockerimage "sigs.k8s.io/kustomize/pkg/image"
-	ksttypes "sigs.k8s.io/kustomize/pkg/types"
+	kust "sigs.k8s.io/kustomize/pkg/image"
 )
 
-// Pull - Pull Docker images listed in the kustomization file to the local Docker registry
+// Pull - Pull Docker images listed in the kustomization file from remote to the local Docker registry
 func Pull(kstPath *string) func(c *cli.Context) error {
 
 	return func(c *cli.Context) error {
 
-		dockerImages, loadErr := loadKustomizationFile(kstPath)
+		dockerImages, loadErr := kustomize_utils.LoadKustomizationFile(kstPath)
 		if loadErr != nil {
 			log.Error(loadErr)
 			return loadErr
@@ -36,31 +34,12 @@ func Pull(kstPath *string) func(c *cli.Context) error {
 	}
 }
 
-// loadKustomizationFile - Load Kustomize kustomization yaml file into correspoding object
-func loadKustomizationFile(kstPath *string) ([]dockerimage.Image, error) {
-
-	kstFilePath, _ := filepath.Abs(*kstPath + "/" + kustomizationFileName)
-	kstYaml, readErr := ioutil.ReadFile(kstFilePath)
-	if readErr != nil {
-		// log.Error(readErr)
-		return nil, readErr
-	}
-
-	var kustomization ksttypes.Kustomization
-	yamlErr := yaml.Unmarshal(kstYaml, &kustomization)
-	if yamlErr != nil {
-		// log.Error(yamlErr)
-		return nil, yamlErr
-	}
-
-	log.Debugf("Total Docker image to pull: %d", len(kustomization.Images))
-	return kustomization.Images, nil
-}
-
 // pullDockerImages - Pull all Docker images from given list
-func pullDockerImages(dockerImages []dockerimage.Image) error {
+func pullDockerImages(dockerImages []kust.Image) error {
 
 	if len(dockerImages) > 0 {
+
+		ctx := context.Background()
 
 		cli, cliErr := docker_utils.OpenDockerClient()
 		if cliErr != nil {
@@ -69,26 +48,18 @@ func pullDockerImages(dockerImages []dockerimage.Image) error {
 		}
 		defer cli.Close()
 
-		ctx := context.Background()
-		if !docker_utils.CheckDockerDaemonRunning(cli, &ctx) {
-			log.Warn("Docker daemon NOT RUNNING")
-			docker_utils.StartDockerDaemon(cli, &ctx)
+		daemonErr := checkDockerDaemon(cli, &ctx)
+		if daemonErr != nil {
+			// log.Error(daemonErr)
+			return daemonErr
 		}
 
-		pullOk := 0
-		pullKo := 0
+		pullOk, pullKo := 0, 0
 		for _, img := range dockerImages {
-			pullErr := docker_utils.
-				PullDockerImage(
-					cli, &ctx,
-					docker_utils.BuildCompleteDockerImage(img.Name, img.NewTag),
-					&types.ImagePullOptions{})
-			if pullErr != nil {
-				log.Errorf("Error pulling Docker image %s: %s", img.Name, pullErr.Error())
-				pullKo++
-			} else {
-				log.Infof("%s image pulled", img.Name)
+			if pull(cli, &ctx, img.Name, img.NewTag) {
 				pullOk++
+			} else {
+				pullKo++
 			}
 		}
 		log.Infof("Total Docker images pulled: %d - Total Docker images pulls failed: %d", pullOk, pullKo)
@@ -97,4 +68,18 @@ func pullDockerImages(dockerImages []dockerimage.Image) error {
 	}
 
 	return nil
+}
+
+// pull -
+func pull(cli *client.Client, ctx *context.Context, imageName, imageTag string) bool {
+
+	imageRef := docker_utils.BuildCompleteDockerImage(imageName, imageTag)
+	pullErr := docker_utils.PullDockerImage(cli, ctx, imageName, imageTag, &types.ImagePullOptions{}, true)
+	if pullErr != nil {
+		log.Errorf("Error pulling Docker image %s: %s", imageRef, pullErr.Error())
+		return false
+	} else {
+		log.Infof("%s image pulled", imageRef)
+		return true
+	}
 }

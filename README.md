@@ -65,16 +65,25 @@ korp push
 ### features
 
 - [x] scan
+- [x] pull
+- [x] push
+  - [ ] push to registry with auth
+- [ ] patch
+- [ ] whole
+
+### testing
+
+- [ ] scan
 - [ ] pull
 - [ ] push
 - [ ] patch
 - [ ] whole
 
-### additionals
+### improvements
 
+- [x] rename and split utils package
 - [ ] debug flag / env-var
   - [ ] using cli framework
-- [x] rename and split utils package
 - [ ] config file
   - [ ] using cli framework
 

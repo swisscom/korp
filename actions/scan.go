@@ -7,6 +7,7 @@ import (
 	"regexp"
 
 	"github.com/swisscom/korp/docker_utils"
+	"github.com/swisscom/korp/korp_utils"
 	"github.com/swisscom/korp/string_utils"
 
 	log "github.com/sirupsen/logrus"
@@ -149,7 +150,7 @@ func buildKustomization(dockerImages []kustomize.Image) *types.Kustomization {
 // writeKustomizationFile - Write Kustomize kustomization yaml object to yaml file
 func writeKustomizationFile(kustomization *types.Kustomization, output *string) error {
 
-	outputFileName, fileErr := filepath.Abs(*output + "/" + kustomizationFileName)
+	outputFileName, fileErr := filepath.Abs(*output + "/" + korp_utils.KustomizationFileName)
 	if fileErr != nil {
 		// log.Error(fileErr)
 		return fileErr
