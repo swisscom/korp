@@ -20,7 +20,7 @@ korp scan -f <path to yaml files> -r <docker registry name>
 `example`
 
 ```
-korp scan -f ./sample-yaml -r
+korp scan -f ./sample-yaml
 cat kustomization.yaml
 ```
 
@@ -60,6 +60,12 @@ korp push
 ### All
 
 `TODO`
+
+### Debug mode
+
+```
+korp -d
+```
 
 ---
 
