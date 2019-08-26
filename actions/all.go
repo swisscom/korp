@@ -8,7 +8,7 @@ import (
 	"github.com/urfave/cli"
 )
 
-func Whole(filesPath, registry, patch *string) func(c *cli.Context) error {
+func All(filesPath, registry, patch *string) func(c *cli.Context) error {
 
 	return func(c *cli.Context) error {
 
