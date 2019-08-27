@@ -11,7 +11,7 @@ import (
 
 const (
 	version  = "0.0.1"
-	logLevel = "debug"
+	logLevel = "info"
 )
 
 // main -
@@ -20,6 +20,8 @@ func main() {
 	setLogLevel(logLevel)
 
 	app := createApp()
+	addFlags(app)
+	addBefore(app)
 	addCommands(app)
 	execApp(app)
 }
@@ -42,6 +44,27 @@ func createApp() *cli.App {
 	app.Usage = "push images to a corporate registry based on Kubernetes yaml files"
 	app.Version = version
 	return app
+}
+
+// addBefore - Add a before handler to the app, called before any command
+func addBefore(app *cli.App) {
+	app.Before = func(c *cli.Context) error {
+		if c.Bool("debug") {
+			log.SetLevel(log.DebugLevel)
+		}
+		return nil
+	}
+}
+
+// addFlags - Add global flags to CLI application
+func addFlags(app *cli.App) {
+	app.Flags = []cli.Flag{
+		cli.BoolFlag{
+			Name:   "debug, d",
+			Usage:  "switch on debug log output",
+			EnvVar: "KORP_LOG_DEBUG",
+		},
+	}
 }
 
 // addCommands - Add commands to CLI application
