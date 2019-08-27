@@ -1,6 +1,12 @@
-# korp
 
+# korp
 A command line tool for pushing docker images into a different Docker registry based on given Kubernetes yaml files.
+
+## Versioning
+
+Current version: `0.0.4`
+
+---
 
 ## Installation
 
@@ -91,8 +97,8 @@ korp -d
 ### improvements
 
 - [x] rename and split utils package
-- [ ] debug flag / env-var
-  - [ ] using cli framework
+- [x] debug flag / env-var
+  - [x] using cli framework
 - [ ] config file
   - [ ] using cli framework
 
