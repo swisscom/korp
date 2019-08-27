@@ -91,8 +91,8 @@ korp -d
 ### improvements
 
 - [x] rename and split utils package
-- [ ] debug flag / env-var
-  - [ ] using cli framework
+- [x] debug flag / env-var
+  - [x] using cli framework
 - [ ] config file
   - [ ] using cli framework
 

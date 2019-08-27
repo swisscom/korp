@@ -26,8 +26,8 @@ func Create() *CliApp {
 
 	app := cli.NewApp()
 	addGlobaConfig(app)
-	// addGlobalFlags(app)
-	// addBefore(app)
+	addGlobalFlags(app)
+	addBefore(app)
 	addCommands(app)
 	lastConfig(app)
 	return &CliApp{
@@ -41,32 +41,42 @@ func addGlobaConfig(app *cli.App) {
 	app.Name = "korp"
 	app.Usage = "push images to a corporate registry based on Kubernetes yaml files"
 	app.Version = version
-	// app.UseShortOptionHandling = true // ?!
+	// app.UseShortOptionHandling = true // flag not found in this version?!
 }
 
-// TODO to be completed
 // addGlobalFlags - Add global flag to CLI application
 func addGlobalFlags(app *cli.App) {
 
 	app.Flags = []cli.Flag{
-
-		// TODO add debug flag
-
+		cli.BoolFlag{
+			Name:   "debug, d",
+			Usage:  "switch on debug log output",
+			EnvVar: "KORP_GLOBAL_DEBUG",
+		},
 		cli.StringFlag{
 			Name:     "config, c",
 			Usage:    "Load configuration from `FILE`",
+			EnvVar:   "KORP_GLOBAL_CONFIG",
 			FilePath: "~/.korp/config",
 		},
 	}
 }
 
-// TODO to be implemented
+// TODO to be completed
 // addBefore - Add before-action to CLI application
 func addBefore(app *cli.App) {
 
-	// TODO add debug flag action
+	app.Before = func(c *cli.Context) error {
 
-	// TODO add config-file action
+		if c.Bool("debug") {
+			log.SetLevel(log.DebugLevel)
+		}
+
+		// TODO add config-file action
+		// try using https://github.com/kelseyhightower/envconfig
+
+		return nil
+	}
 }
 
 // addCommands - Add commands to CLI application
@@ -81,6 +91,7 @@ func addCommands(app *cli.App) {
 	}
 }
 
+// lastConfig - Add last configuration right before start CLI application
 func lastConfig(app *cli.App) {
 
 	// sorting flags in help section
