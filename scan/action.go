@@ -1,4 +1,4 @@
-package actions
+package scan
 
 import (
 	"io/ioutil"
@@ -17,8 +17,13 @@ import (
 	"sigs.k8s.io/kustomize/pkg/types"
 )
 
-// Scan - Collect images referenced in all yaml files in the path and create a kustomization file
-func Scan(scanPath, registry, output *string) func(c *cli.Context) error {
+const (
+	yamlFileRegexStr       = `(?mi).*\.(yaml|yml)`
+	dockerImageRefRegexStr = `(?m)image:\s*(?P<image>[^[{\s]+)\s+`
+)
+
+// scan - Collect images referenced in all yaml files in the path and create a kustomization file
+func scan(scanPath, registry, output *string) func(c *cli.Context) error {
 
 	return func(c *cli.Context) error {
 
