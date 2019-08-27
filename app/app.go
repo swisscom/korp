@@ -4,14 +4,18 @@ import (
 	"os"
 	"sort"
 
-	"github.com/swisscom/korp/actions"
+	"github.com/swisscom/korp/all"
+	"github.com/swisscom/korp/patch"
+	"github.com/swisscom/korp/pull"
+	"github.com/swisscom/korp/push"
+	"github.com/swisscom/korp/scan"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
 )
 
 const (
-	version = "0.0.1"
+	version = "0.0.4"
 )
 
 type CliApp struct {
@@ -68,128 +72,12 @@ func addBefore(app *cli.App) {
 // addCommands - Add commands to CLI application
 func addCommands(app *cli.App) {
 
-	var filesPath, registry, output, kstPath, patch string
 	app.Commands = []cli.Command{
-		{
-			Name:    "scan",
-			Aliases: []string{"s"},
-			Usage:   "collect images referenced in all yaml files in the path and create a kustomization file",
-			Flags: []cli.Flag{
-				cli.StringFlag{
-					Name:        "files, f",
-					Usage:       "path to yaml files to scan (default: current dir)",
-					EnvVar:      "KORP_SCAN_FILES",
-					Value:       ".",
-					Required:    false,
-					Destination: &filesPath,
-				},
-				cli.StringFlag{
-					Name:        "registry, r",
-					Usage:       "name of the Docker registry to use (default: 'docker.io')",
-					EnvVar:      "KORP_SCAN_REGISTRY",
-					Value:       "docker.io",
-					Required:    false,
-					Destination: &registry,
-				},
-				cli.StringFlag{
-					Name:        "output, o",
-					Usage:       "path of the kustomization file to be written (default: current dir)",
-					EnvVar:      "KORP_SCAN_OUTPUT",
-					Value:       ".",
-					Required:    false,
-					Destination: &output,
-				},
-			},
-			Action: actions.Scan(&filesPath, &registry, &output),
-		},
-		{
-			Name:    "pull",
-			Aliases: []string{"p"},
-			Usage:   "pull Docker images listed in the kustomization file to the local Docker registry",
-			Flags: []cli.Flag{
-				cli.StringFlag{
-					Name:        "kustomization-path, k",
-					Usage:       "path to the kustomization file (default: current dir)",
-					EnvVar:      "KORP_PULL_KST_PATH",
-					Value:       ".",
-					Required:    false,
-					Destination: &kstPath,
-				},
-			},
-			Action: actions.Pull(&kstPath),
-		},
-		{
-			Name:    "push",
-			Aliases: []string{"u"},
-			Usage:   "re-tag original Docker images and push them to the new Docker registry",
-			Flags: []cli.Flag{
-				cli.StringFlag{
-					Name:        "kustomization-path, k",
-					Usage:       "path to the kustomization file (default: current dir)",
-					EnvVar:      "KORP_PUSH_KST_PATH",
-					Value:       ".",
-					Required:    false,
-					Destination: &kstPath,
-				},
-			},
-			Action: actions.Push(&kstPath),
-		},
-		{
-			Name:    "patch",
-			Aliases: []string{"a"},
-			Usage:   "patch all yaml files in the path with Docker images tags to the new Docker registry",
-			Flags: []cli.Flag{
-				cli.StringFlag{
-					Name:        "files, f",
-					Usage:       "path to yaml files to patch (default: current dir)",
-					EnvVar:      "KORP_PATCH_FILES",
-					Value:       ".",
-					Required:    false,
-					Destination: &filesPath,
-				},
-				cli.StringFlag{
-					Name:        "kustomization-path, k",
-					Usage:       "path to the kustomization file (default: current dir)",
-					EnvVar:      "KORP_PATCH_KST_PATH",
-					Value:       ".",
-					Required:    false,
-					Destination: &kstPath,
-				},
-			},
-			Action: actions.Patch(&filesPath, &kstPath),
-		},
-		{
-			Name:    "all",
-			Aliases: []string{"a"},
-			Usage:   "scan >> pull >> push [>> patch]",
-			Flags: []cli.Flag{
-				cli.StringFlag{
-					Name:        "files, f",
-					Usage:       "path to yaml files to scan (default: current dir)",
-					EnvVar:      "KORP_ALL_FILES",
-					Value:       ".",
-					Required:    false,
-					Destination: &filesPath,
-				},
-				cli.StringFlag{
-					Name:        "registry, r",
-					Usage:       "name of the Docker registry to use (default: 'docker.io')",
-					EnvVar:      "KORP_ALL_REGISTRY",
-					Value:       "docker.io",
-					Required:    false,
-					Destination: &registry,
-				},
-				cli.StringFlag{
-					Name:        "patch, p",
-					Usage:       "execute patch phase",
-					EnvVar:      "KORP_ALL_PATCH",
-					Value:       "false",
-					Required:    false,
-					Destination: &patch,
-				},
-			},
-			Action: actions.All(&filesPath, &registry, &patch),
-		},
+		*scan.BuildCommand(),
+		*pull.BuildCommand(),
+		*push.BuildCommand(),
+		*patch.BuildCommand(),
+		*all.BuildCommand(),
 	}
 }
 

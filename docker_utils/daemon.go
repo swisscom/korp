@@ -13,7 +13,21 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// CheckDockerDaemon - Check wheather the Docker daemon is running (making a simple request)
+// CheckDockerDaemon - Check wheather the Docker daemon is running, if the method starts it
+func CheckDockerDaemon(cli *client.Client, ctx *context.Context) error {
+
+	if !CheckDockerDaemonRunning(cli, ctx) {
+		log.Warn("Docker daemon NOT RUNNING")
+		daemonErr := StartDockerDaemon(cli, ctx)
+		if daemonErr != nil {
+			// log.Error(daemonErr)
+			return daemonErr
+		}
+	}
+	return nil
+}
+
+// CheckDockerDaemonRunning - Check wheather the Docker daemon is running (making a simple request)
 func CheckDockerDaemonRunning(cli *client.Client, ctx *context.Context) bool {
 
 	_, listErr := cli.ContainerList(*ctx, types.ContainerListOptions{})
