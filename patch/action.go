@@ -1,4 +1,4 @@
-package actions
+package patch
 
 import (
 	"errors"
@@ -8,21 +8,13 @@ import (
 	"github.com/urfave/cli"
 )
 
-func All(filesPath, registry, patch *string) func(c *cli.Context) error {
+func patch(patchPath, kstPath *string) func(c *cli.Context) error {
 
 	return func(c *cli.Context) error {
 
-		// OPTIMIZE DOCKER-CLIENT OPENING/CLOSING
+		// loac kustomization.yaml
 
-		// scan
-
-		// pull
-
-		// push
-
-		if *patch == "true" {
-			// patch
-		}
+		// TBD
 
 		errMsg := "Method not yet implemented!"
 		log.Error(errMsg)

@@ -1,20 +1,20 @@
-package actions
+package push
 
 import (
 	"context"
 
-	"github.com/docker/docker/client"
 	"github.com/swisscom/korp/docker_utils"
 	"github.com/swisscom/korp/kustomize_utils"
 
 	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/client"
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
 	kust "sigs.k8s.io/kustomize/pkg/image"
 )
 
-// Push - Push Docker images listed in the kustomization file to the new Docker registry
-func Push(kstPath *string) func(c *cli.Context) error {
+// push - Push Docker images listed in the kustomization file to the new Docker registry
+func push(kstPath *string) func(c *cli.Context) error {
 
 	return func(c *cli.Context) error {
 
@@ -48,7 +48,7 @@ func tagAndPushDockerImages(dockerImages []kust.Image) error {
 		}
 		defer cli.Close()
 
-		daemonErr := checkDockerDaemon(cli, &ctx)
+		daemonErr := docker_utils.CheckDockerDaemon(cli, &ctx)
 		if daemonErr != nil {
 			// log.Error(daemonErr)
 			return daemonErr
@@ -56,7 +56,7 @@ func tagAndPushDockerImages(dockerImages []kust.Image) error {
 
 		tagOk, tagKo, pushOk, pushKo := 0, 0, 0, 0
 		for _, img := range dockerImages {
-			tagResult, pushResult := tag(cli, &ctx, img.Name, img.NewTag, img.NewName, img.NewTag)
+			tagResult, pushResult := tagDockerImage(cli, &ctx, img.Name, img.NewTag, img.NewName, img.NewTag)
 			if tagResult {
 				tagOk++
 			} else {
@@ -77,8 +77,8 @@ func tagAndPushDockerImages(dockerImages []kust.Image) error {
 	return nil
 }
 
-// tag -
-func tag(cli *client.Client, ctx *context.Context, imageName, imageTag, imageNameNew, imageTagNew string) (tagResult, pushResult bool) {
+// tagDockerImage -
+func tagDockerImage(cli *client.Client, ctx *context.Context, imageName, imageTag, imageNameNew, imageTagNew string) (tagResult, pushResult bool) {
 
 	imageRef := docker_utils.BuildCompleteDockerImage(imageName, imageTag)
 	imageRefNew := docker_utils.BuildCompleteDockerImage(imageName, imageTag)
@@ -90,15 +90,15 @@ func tag(cli *client.Client, ctx *context.Context, imageName, imageTag, imageNam
 
 	log.Infof("Tag %s created", imageRefNew)
 
-	if push(cli, ctx, imageNameNew, imageTagNew) {
+	if pushDockerImage(cli, ctx, imageNameNew, imageTagNew) {
 		return true, true
 	}
 
 	return true, false
 }
 
-// push -
-func push(cli *client.Client, ctx *context.Context, imageName, imageTag string) bool {
+// pushDockerImage -
+func pushDockerImage(cli *client.Client, ctx *context.Context, imageName, imageTag string) bool {
 
 	// PLEASE NOTE: this is a required trick even with fake auth
 	pushOpt := types.ImagePushOptions{
