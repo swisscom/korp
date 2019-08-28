@@ -5,6 +5,7 @@ import (
 	"sort"
 
 	"github.com/swisscom/korp/all"
+	"github.com/swisscom/korp/autocompletion"
 	"github.com/swisscom/korp/patch"
 	"github.com/swisscom/korp/pull"
 	"github.com/swisscom/korp/push"
@@ -42,6 +43,7 @@ func addGlobaConfig(app *cli.App) {
 	app.Usage = "push images to a corporate registry based on Kubernetes yaml files"
 	app.Version = version
 	// app.UseShortOptionHandling = true // flag not found in this version?!
+	app.EnableBashCompletion = true
 }
 
 // addGlobalFlags - Add global flag to CLI application
@@ -88,6 +90,7 @@ func addCommands(app *cli.App) {
 		*push.BuildCommand(),
 		*patch.BuildCommand(),
 		*all.BuildCommand(),
+		*autocompletion.BuildCommand(),
 	}
 }
 
