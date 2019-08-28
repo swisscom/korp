@@ -12,10 +12,15 @@ import (
 // all - Execute all other commands in a row
 func all(c *cli.Context) error {
 
-	// filesPath := c.String("files")
-	// registry := c.String("registry")
-	// patch := c.Bool("patch")
-	// kstPath := c.String("kustomization-path")
+	scanPath := c.String("files")
+	registry := c.String("registry")
+	patch := c.Bool("patch")
+	kstPath := c.String("kustomization-path")
+
+	log.Debugf("Path to scan: %s", scanPath)
+	log.Debugf("Registry: %s", registry)
+	log.Debugf("Output: %s", patch)
+	log.Debugf("Kustomization file path: %s", kstPath)
 
 	// WARN: OPTIMIZE DOCKER-CLIENT OPENING/CLOSING
 

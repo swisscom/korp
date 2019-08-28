@@ -29,6 +29,10 @@ func scan(c *cli.Context) error {
 	registry := c.String("registry")
 	output := c.String("output")
 
+	log.Debugf("Path to scan: %s", scanPath)
+	log.Debugf("Registry: %s", registry)
+	log.Debugf("Output: %s", output)
+
 	dockerImages, dockerErr := retrieveDockerImages(scanPath, registry)
 	if dockerErr != nil {
 		log.Error(dockerErr)

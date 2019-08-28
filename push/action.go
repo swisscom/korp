@@ -18,6 +18,8 @@ func push(c *cli.Context) error {
 
 	kstPath := c.String("kustomization-path")
 
+	log.Debugf("Kustomization file path: %s", kstPath)
+
 	dockerImages, loadErr := kustomize_utils.LoadKustomizationFile(kstPath)
 	if loadErr != nil {
 		log.Error(loadErr)

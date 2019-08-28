@@ -12,8 +12,11 @@ import (
 // patch - Patch all yaml files in the given path with the new Docker image reference
 func patch(c *cli.Context) error {
 
-	// patchPath := c.String("files")
-	// kstPath := c.String("kustomization-path")
+	patchPath := c.String("files")
+	kstPath := c.String("kustomization-path")
+
+	log.Debugf("Path to yaml files to be patched: %s", patchPath)
+	log.Debugf("Kustomization file path: %s", kstPath)
 
 	// load kustomization.yaml
 	// patch all yaml in the path
