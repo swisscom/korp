@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	version = "0.0.4"
+	version = "0.3.2"
 )
 
 type CliApp struct {
@@ -57,7 +57,7 @@ func addGlobalFlags(app *cli.App) {
 			Name:     "config, c",
 			Usage:    "Load configuration from `FILE`",
 			EnvVar:   "KORP_GLOBAL_CONFIG",
-			FilePath: "~/.korp/config",
+			FilePath: "./config",
 		},
 	}
 }

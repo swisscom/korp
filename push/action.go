@@ -14,24 +14,23 @@ import (
 )
 
 // push - Push Docker images listed in the kustomization file to the new Docker registry
-func push(kstPath *string) func(c *cli.Context) error {
+func push(c *cli.Context) error {
 
-	return func(c *cli.Context) error {
+	kstPath := c.String("kustomization-path")
 
-		dockerImages, loadErr := kustomize_utils.LoadKustomizationFile(kstPath)
-		if loadErr != nil {
-			log.Error(loadErr)
-			return loadErr
-		}
-
-		tagPushErr := tagAndPushDockerImages(dockerImages)
-		if tagPushErr != nil {
-			log.Error(tagPushErr)
-			return tagPushErr
-		}
-
-		return nil
+	dockerImages, loadErr := kustomize_utils.LoadKustomizationFile(kstPath)
+	if loadErr != nil {
+		log.Error(loadErr)
+		return loadErr
 	}
+
+	tagPushErr := tagAndPushDockerImages(dockerImages)
+	if tagPushErr != nil {
+		log.Error(tagPushErr)
+		return tagPushErr
+	}
+
+	return nil
 }
 
 // tagAndPushDockerImages - Tag and push all Docker images from given list

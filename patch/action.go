@@ -8,16 +8,17 @@ import (
 	"github.com/urfave/cli"
 )
 
-func patch(patchPath, kstPath *string) func(c *cli.Context) error {
+// TODO to be implemented
+// patch - Patch all yaml files in the given path with the new Docker image reference
+func patch(c *cli.Context) error {
 
-	return func(c *cli.Context) error {
+	// patchPath := c.String("files")
+	// kstPath := c.String("kustomization-path")
 
-		// loac kustomization.yaml
+	// load kustomization.yaml
+	// patch all yaml in the path
 
-		// TBD
-
-		errMsg := "Method not yet implemented!"
-		log.Error(errMsg)
-		return errors.New(errMsg)
-	}
+	errMsg := "Method not yet implemented!"
+	log.Error(errMsg)
+	return errors.New(errMsg)
 }
