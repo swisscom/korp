@@ -12,10 +12,10 @@ import (
 	ksttypes "sigs.k8s.io/kustomize/pkg/types"
 )
 
-// loadKustomizationFile - Load Kustomize kustomization yaml file into correspoding object
-func LoadKustomizationFile(kstPath *string) ([]kust.Image, error) {
+// LoadKustomizationFile - Load Kustomize kustomization yaml file into correspoding object
+func LoadKustomizationFile(kstPath string) ([]kust.Image, error) {
 
-	kstFilePath, _ := filepath.Abs(*kstPath + "/" + korp_utils.KustomizationFileName)
+	kstFilePath, _ := filepath.Abs(kstPath + "/" + korp_utils.KustomizationFileName)
 	kstYaml, readErr := ioutil.ReadFile(kstFilePath)
 	if readErr != nil {
 		// log.Error(readErr)

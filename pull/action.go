@@ -14,24 +14,23 @@ import (
 )
 
 // pull - Pull Docker images listed in the kustomization file from remote to the local Docker registry
-func pull(kstPath *string) func(c *cli.Context) error {
+func pull(c *cli.Context) error {
 
-	return func(c *cli.Context) error {
+	kstPath := c.String("kustomization-path")
 
-		dockerImages, loadErr := kustomize_utils.LoadKustomizationFile(kstPath)
-		if loadErr != nil {
-			log.Error(loadErr)
-			return loadErr
-		}
-
-		pullErr := pullDockerImages(dockerImages)
-		if pullErr != nil {
-			log.Error(pullErr)
-			return pullErr
-		}
-
-		return nil
+	dockerImages, loadErr := kustomize_utils.LoadKustomizationFile(kstPath)
+	if loadErr != nil {
+		log.Error(loadErr)
+		return loadErr
 	}
+
+	pullErr := pullDockerImages(dockerImages)
+	if pullErr != nil {
+		log.Error(pullErr)
+		return pullErr
+	}
+
+	return nil
 }
 
 // pullDockerImages - Pull all Docker images from given list

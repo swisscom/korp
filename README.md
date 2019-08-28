@@ -4,7 +4,7 @@ A command line tool for pushing docker images into a different Docker registry b
 
 ## Versioning
 
-Current version: `0.0.4`
+Current version: `0.3.2`
 
 ---
 
@@ -92,18 +92,22 @@ korp -d
 - [ ] pull
 - [ ] push
 - [ ] patch
-- [ ] whole
+- [ ] all
 
-### improvements
+### general
 
 - [x] rename and split utils package
 - [x] debug flag / env-var
   - [x] using cli framework
-- [ ] config file
-  - [ ] using cli framework
+- [ ] config file (`TBD how`)
+- [ ] testing
+- [ ] shell autocompletion
+- [ ] replace logrus with zap or zerolog
+- [ ] fix image-search regex to incluse CRDs
+- [ ] release 1.0.0
 
 ---
 
-## Issues
+## Known issues
 
-- CRD image references not recognized
+- CRD image references not recognized (to be fixed in the next release)
