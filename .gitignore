@@ -1,16 +1,24 @@
-# Binaries for programs and plugins
+
+###################### GoLang ###################
+
+########### Binaries
 *.exe
 *.exe~
 *.dll
 *.so
 *.dylib
 
-# Test binary, build with `go test -c`
+########### Test binaries
 *.test
 
-# Output of the go coverage tool, specifically when used with LiteIDE
+########### Go coverage tool output (LiteIDE)
 *.out
 
+########### Vendor
+vendor/*
+!vendor/.gitkeep
+
+########### Project specific
 korp
 dist
 kustomization.yaml
