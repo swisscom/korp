@@ -4,7 +4,7 @@ A command line tool for pushing docker images into a different Docker registry b
 
 ## Versioning
 
-Current version: `0.3.2`
+Current version: `0.3.3`
 
 ---
 
@@ -73,6 +73,28 @@ korp push
 korp -d
 ```
 
+### Autocompletion
+
+Source the `autocomplete-scripts/*_autocomplete` file in your `.bashrc | .zshrc` file while setting the `PROG` variable to the name of your program.
+
+#### Method 1
+```
+go build .
+source <(./korp autocompletion zsh)
+./korp
+# now play with tab
+```
+
+#### Method 2
+```
+go build .
+PROG=korp source autocomplete-scripts/zsh_autocomplete
+./korp
+# now play with tab
+```
+
+---
+
 ---
 
 ## TODOs
@@ -93,6 +115,7 @@ korp -d
 - [ ] push
 - [ ] patch
 - [ ] all
+- [ ] autocompletion
 
 ### general
 
@@ -100,8 +123,8 @@ korp -d
 - [x] debug flag / env-var
   - [x] using cli framework
 - [ ] config file (`TBD how`)
+- [x] shell autocompletion
 - [ ] testing
-- [ ] shell autocompletion
 - [ ] replace logrus with zap or zerolog
 - [ ] fix image-search regex to incluse CRDs
 - [ ] release 1.0.0
