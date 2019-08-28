@@ -3,10 +3,13 @@ package app
 import (
 	"os"
 	"sort"
+	"strings"
 
-	"github.com/swisscom/korp/all"
+	// "github.com/swisscom/korp/all"
 	"github.com/swisscom/korp/autocompletion"
-	"github.com/swisscom/korp/patch"
+	"github.com/swisscom/korp/korp_utils"
+
+	// "github.com/swisscom/korp/patch"
 	"github.com/swisscom/korp/pull"
 	"github.com/swisscom/korp/push"
 	"github.com/swisscom/korp/scan"
@@ -56,7 +59,13 @@ func addGlobalFlags(app *cli.App) {
 			EnvVar: "KORP_GLOBAL_DEBUG",
 		},
 		cli.StringFlag{
-			Name:     "config, c",
+			Name:     "string-config, c",
+			Usage:    "Load configuration from `STRING`",
+			EnvVar:   "KORP_GLOBAL_STRING_CONFIG",
+			FilePath: "./config",
+		},
+		cli.StringFlag{
+			Name:     "config, f",
 			Usage:    "Load configuration from `FILE`",
 			EnvVar:   "KORP_GLOBAL_CONFIG",
 			FilePath: "./config",
@@ -64,20 +73,47 @@ func addGlobalFlags(app *cli.App) {
 	}
 }
 
-// TODO to be completed
-// addBefore - Add before-action to CLI application
+// addBefore - Add an action to be execute before the CLI application even starts
 func addBefore(app *cli.App) {
 
 	app.Before = func(c *cli.Context) error {
 
-		if c.Bool("debug") {
-			log.SetLevel(log.DebugLevel)
-		}
-
-		// TODO add config-file action
-		// try using https://github.com/kelseyhightower/envconfig
+		setDebug(c.Bool("debug"))
+		loadConfigAsString(c.String("string-config"))
 
 		return nil
+	}
+}
+
+// setDebug -
+func setDebug(debug bool) {
+
+	if debug {
+		korp_utils.SetLogLevel("debug")
+	}
+}
+
+// loadConfigAsString -
+func loadConfigAsString(wholeConfig string) {
+
+	if wholeConfig != "" {
+		log.Debugf("Whole config as string: %s\n", wholeConfig)
+
+		wholeConfigSplit := strings.Fields(wholeConfig)
+		log.Debugf("Whole config as array: %s\n", wholeConfigSplit)
+
+		for _, config := range wholeConfigSplit {
+			configSplit := strings.Split(config, "=")
+			log.Debugf("single config: %s\n", configSplit)
+			if len(configSplit) == 2 && configSplit[0] != "" && configSplit[1] != "" {
+				log.Debugf("env-var set: %s=%s", configSplit[0], configSplit[1])
+				os.Setenv(configSplit[0], configSplit[1])
+			} else {
+				log.Warnf("Config not valid: %s - skipping and taking default...", configSplit)
+			}
+		}
+	} else {
+		log.Debug("Config file not set or empty")
 	}
 }
 
@@ -88,8 +124,8 @@ func addCommands(app *cli.App) {
 		*scan.BuildCommand(),
 		*pull.BuildCommand(),
 		*push.BuildCommand(),
-		*patch.BuildCommand(),
-		*all.BuildCommand(),
+		// *patch.BuildCommand(),
+		// *all.BuildCommand(),
 		*autocompletion.BuildCommand(),
 	}
 }

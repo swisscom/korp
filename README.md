@@ -4,7 +4,7 @@ A command line tool for pushing docker images into a different Docker registry b
 
 ## Versioning
 
-Current version: `0.3.2`
+Current version: `0.4.0`
 
 ---
 
@@ -122,7 +122,9 @@ PROG=korp source autocomplete-scripts/zsh_autocomplete
 - [x] rename and split utils package
 - [x] debug flag / env-var
   - [x] using cli framework
-- [ ] config file (`TBD how`)
+- [ ] config file
+  - [x] string based
+  - [ ] file based
 - [x] shell autocompletion
 - [ ] testing
 - [ ] replace logrus with zap or zerolog

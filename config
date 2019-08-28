@@ -1,0 +1,2 @@
+KORP_SCAN_FILES=./samples/yaml
+KORP_SCAN_REGISTRY=localhost:5000
