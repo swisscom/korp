@@ -6,7 +6,6 @@ import (
 
 	"github.com/swisscom/korp/all"
 	"github.com/swisscom/korp/autocompletion"
-	"github.com/swisscom/korp/patch"
 	"github.com/swisscom/korp/pull"
 	"github.com/swisscom/korp/push"
 	"github.com/swisscom/korp/scan"
@@ -88,7 +87,6 @@ func addCommands(app *cli.App) {
 		*scan.BuildCommand(),
 		*pull.BuildCommand(),
 		*push.BuildCommand(),
-		*patch.BuildCommand(),
 		*all.BuildCommand(),
 		*autocompletion.BuildCommand(),
 	}

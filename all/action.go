@@ -14,7 +14,6 @@ func all(c *cli.Context) error {
 
 	// filesPath := c.String("files")
 	// registry := c.String("registry")
-	// patch := c.Bool("patch")
 	// kstPath := c.String("kustomization-path")
 
 	// WARN: OPTIMIZE DOCKER-CLIENT OPENING/CLOSING
@@ -22,9 +21,6 @@ func all(c *cli.Context) error {
 	// scan
 	// pull
 	// push
-	// if *patch == "true" {
-	// patch
-	// }
 
 	errMsg := "Method not yet implemented!"
 	log.Error(errMsg)

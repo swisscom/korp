@@ -1,5 +1,5 @@
-
 # korp
+
 A command line tool for pushing docker images into a different Docker registry based on given Kubernetes yaml files.
 
 ## Versioning
@@ -78,6 +78,7 @@ korp -d
 Source the `autocomplete-scripts/*_autocomplete` file in your `.bashrc | .zshrc` file while setting the `PROG` variable to the name of your program.
 
 #### Method 1
+
 ```
 go build .
 source <(./korp autocompletion zsh)
@@ -86,6 +87,7 @@ source <(./korp autocompletion zsh)
 ```
 
 #### Method 2
+
 ```
 go build .
 PROG=korp source autocomplete-scripts/zsh_autocomplete
@@ -105,7 +107,6 @@ PROG=korp source autocomplete-scripts/zsh_autocomplete
 - [x] pull
 - [x] push
   - [ ] push to registry with auth
-- [ ] patch
 - [ ] all
 
 ### testing
@@ -113,7 +114,6 @@ PROG=korp source autocomplete-scripts/zsh_autocomplete
 - [ ] scan
 - [ ] pull
 - [ ] push
-- [ ] patch
 - [ ] all
 - [ ] autocompletion
 
