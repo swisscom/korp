@@ -4,7 +4,7 @@ A command line tool for pushing docker images into a different Docker registry b
 
 ## Versioning
 
-Current version: `0.3.3`
+Current version: `0.4.0`
 
 ---
 
