@@ -10,7 +10,7 @@ func BuildCommand() *cli.Command {
 	return &cli.Command{
 		Name:    "all",
 		Aliases: []string{"a"},
-		Usage:   "scan >> pull >> push [>> patch]",
+		Usage:   "scan >> pull >> push",
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:     "files, f",
@@ -24,19 +24,6 @@ func BuildCommand() *cli.Command {
 				Usage:    "name of the Docker registry to use (default: 'docker.io')",
 				EnvVar:   "KORP_ALL_REGISTRY",
 				Value:    "docker.io",
-				Required: false,
-			},
-			cli.BoolFlag{
-				Name:     "patch, p",
-				Usage:    "execute patch phase",
-				EnvVar:   "KORP_ALL_PATCH",
-				Required: false,
-			},
-			cli.StringFlag{
-				Name:     "kustomization-path, k",
-				Usage:    "path to the kustomization file (default: current dir)",
-				EnvVar:   "KORP_PATCH_KST_PATH",
-				Value:    ".",
 				Required: false,
 			},
 		},
