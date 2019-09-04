@@ -8,6 +8,7 @@ require (
 	github.com/google/uuid v1.1.1 // indirect
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/kubernetes-sigs/kustomize v2.0.3+incompatible
+	github.com/matryer/is v1.2.0
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7 // indirect
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
 	github.com/pkg/errors v0.8.1 // indirect
