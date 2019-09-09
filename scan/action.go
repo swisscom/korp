@@ -7,6 +7,7 @@ import (
 	"regexp"
 
 	"github.com/swisscom/korp/docker_utils"
+	"github.com/swisscom/korp/file_utils"
 	"github.com/swisscom/korp/korp_utils"
 	"github.com/swisscom/korp/string_utils"
 
@@ -18,9 +19,12 @@ import (
 )
 
 const (
-	yamlFileRegexStr       = `(?mi).*\.(yaml|yml)`
 	dockerImageRefRegexStr = `(?m)image:\s*(?P<image>[^[{\s]+)\s+`
 )
+
+type FileWalker interface {
+	Walk(string, func(string, os.FileInfo, error) error)
+}
 
 // scan - Collect images referenced in all yaml files in the path and create a kustomization file
 func scan(c *cli.Context) error {
@@ -50,7 +54,7 @@ func scan(c *cli.Context) error {
 func retrieveDockerImages(scanPath, registry string) ([]kustomize.Image, error) {
 
 	var dockerImages []kustomize.Image
-	filesPaths, yamlErr := listYamlFilesPaths(scanPath)
+	filesPaths, yamlErr := file_utils.ListYamlFilesPaths(scanPath)
 	if yamlErr != nil {
 		// log.Error(yamlErr)
 		return nil, yamlErr
@@ -71,22 +75,6 @@ func retrieveDockerImages(scanPath, registry string) ([]kustomize.Image, error) 
 	dockerImages = removeDockerImageDuplicates(dockerImages)
 	log.Infof("Total Docker images found in %s: %d", scanPath, len(dockerImages))
 	return dockerImages, nil
-}
-
-// listYamlFilesPaths - List all yaml files paths in the given root path
-func listYamlFilesPaths(rootPath string) ([]string, error) {
-
-	var filesPaths []string
-	yamlFileRegex := regexp.MustCompile(yamlFileRegexStr)
-	err := filepath.Walk(rootPath, func(path string, info os.FileInfo, err error) error {
-		if !info.IsDir() && yamlFileRegex.MatchString(info.Name()) {
-			log.Debugf("Found yaml file: %s", path)
-			filesPaths = append(filesPaths, path)
-		}
-		return nil
-	})
-	log.Debugf("Total yaml files found in %s: %d", rootPath, len(filesPaths))
-	return filesPaths, err
 }
 
 // listDockerImageReferences - List all Docker image reference in the given file path
