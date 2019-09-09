@@ -1,11 +1,16 @@
 package scan
 
 import (
+	"io/ioutil"
+
+	"github.com/swisscom/korp/file_utils"
 	"github.com/urfave/cli"
 )
 
 // BuildCommand - Build CLI application command
 func BuildCommand() *cli.Command {
+	scanIo := IoImpl{listYamlFilesPaths: file_utils.ListYamlFilesPaths, readFile: ioutil.ReadFile, writeFile: ioutil.WriteFile}
+	action := Action{io: scanIo}
 
 	return &cli.Command{
 		Name:    "scan",
@@ -34,6 +39,6 @@ func BuildCommand() *cli.Command {
 				Required: false,
 			},
 		},
-		Action: scan,
+		Action: action.scan,
 	}
 }

@@ -22,26 +22,56 @@ const (
 	dockerImageRefRegexStr = `(?m)image:\s*(?P<image>[^[{\s]+)\s+`
 )
 
-type FileWalker interface {
-	Walk(string, func(string, os.FileInfo, error) error)
+// Action - struct for scan action
+type Action struct {
+	io Io
+}
+
+// Io - interface for all io functions used by scan
+type Io interface {
+	ListYamlFilesPaths(rootPath string) ([]string, error)
+	ReadFile(filename string) ([]byte, error)
+	WriteFile(filename string, data []byte, perm os.FileMode) error
+}
+
+// IoImpl - real io implementation using ioutil and file_utils
+type IoImpl struct {
+	listYamlFilesPaths func(rootPath string) ([]string, error)
+	readFile           func(filename string) ([]byte, error)
+	writeFile          func(filename string, data []byte, perm os.FileMode) error
+}
+
+// ListYamlFilesPaths - real implementation of ListYamlFilesPaths backed by file_utils
+func (s IoImpl) ListYamlFilesPaths(rootPath string) ([]string, error) {
+	return file_utils.ListYamlFilesPaths(rootPath)
+}
+
+// ReadFile - real implementation of ReadFile backed by ioutil
+func (s IoImpl) ReadFile(filename string) ([]byte, error) {
+	return ioutil.ReadFile(filename)
+}
+
+// WriteFile - real implementation of WriteFile backed by ioutil
+func (s IoImpl) WriteFile(filename string, data []byte, perm os.FileMode) error {
+	return ioutil.WriteFile(filename, data, perm)
 }
 
 // scan - Collect images referenced in all yaml files in the path and create a kustomization file
-func scan(c *cli.Context) error {
+func (s *Action) scan(c *cli.Context) error {
 
 	scanPath := c.String("files")
 	registry := c.String("registry")
 	output := c.String("output")
 
-	dockerImages, dockerErr := retrieveDockerImages(scanPath, registry)
+	dockerImages, dockerErr := s.retrieveDockerImages(scanPath, registry)
 	if dockerErr != nil {
 		log.Error(dockerErr)
 		return dockerErr
 	}
 
-	kustomization := buildKustomization(dockerImages)
+	kustomization := s.buildKustomization(dockerImages)
 
-	writeErr := writeKustomizationFile(kustomization, output)
+	writeErr := s.writeKustomizationFile(kustomization, output)
 	if writeErr != nil {
 		log.Error(writeErr)
 		return writeErr
@@ -51,7 +81,7 @@ func scan(c *cli.Context) error {
 }
 
 // retrieveDockerImages - Retrieve all Docker images in all yaml files in the given path
-func retrieveDockerImages(scanPath, registry string) ([]kustomize.Image, error) {
+func (s *Action) retrieveDockerImages(scanPath, registry string) ([]kustomize.Image, error) {
 
 	var dockerImages []kustomize.Image
 	filesPaths, yamlErr := file_utils.ListYamlFilesPaths(scanPath)
@@ -60,7 +90,7 @@ func retrieveDockerImages(scanPath, registry string) ([]kustomize.Image, error) 
 		return nil, yamlErr
 	}
 	for _, yamlPath := range filesPaths {
-		dockerImageRefs, dockerErr := listDockerImageReferences(yamlPath)
+		dockerImageRefs, dockerErr := s.listDockerImageReferences(yamlPath)
 		if dockerErr != nil {
 			// log.Error(dockerErr)
 			return nil, dockerErr
@@ -68,17 +98,17 @@ func retrieveDockerImages(scanPath, registry string) ([]kustomize.Image, error) 
 		if len(dockerImageRefs) > 0 {
 			for _, dockerImageRef := range dockerImageRefs {
 				dockerImageName, dockerImageTag := docker_utils.ParseDockerImageNameAndTag(dockerImageRef)
-				dockerImages = append(dockerImages, buildNewDockerImage(dockerImageName, dockerImageTag, registry))
+				dockerImages = append(dockerImages, s.buildNewDockerImage(dockerImageName, dockerImageTag, registry))
 			}
 		}
 	}
-	dockerImages = removeDockerImageDuplicates(dockerImages)
+	dockerImages = s.removeDockerImageDuplicates(dockerImages)
 	log.Infof("Total Docker images found in %s: %d", scanPath, len(dockerImages))
 	return dockerImages, nil
 }
 
 // listDockerImageReferences - List all Docker image reference in the given file path
-func listDockerImageReferences(filePath string) ([]string, error) {
+func (s *Action) listDockerImageReferences(filePath string) ([]string, error) {
 
 	fileContent, err := ioutil.ReadFile(filePath)
 	var dockerImagesRefs []string
@@ -95,7 +125,7 @@ func listDockerImageReferences(filePath string) ([]string, error) {
 }
 
 // buildNewDockerImage - Build Docker image object
-func buildNewDockerImage(dockerImageName, dockerImageTag, registry string) kustomize.Image {
+func (s *Action) buildNewDockerImage(dockerImageName, dockerImageTag, registry string) kustomize.Image {
 
 	trimmedDockerImageName := string_utils.TrimQuotes(dockerImageName)
 	image := kustomize.Image{
@@ -109,7 +139,7 @@ func buildNewDockerImage(dockerImageName, dockerImageTag, registry string) kusto
 }
 
 // removeDockerImageDuplicates - Remove duplicated Docker image references
-func removeDockerImageDuplicates(dockerImages []kustomize.Image) []kustomize.Image {
+func (s *Action) removeDockerImageDuplicates(dockerImages []kustomize.Image) []kustomize.Image {
 
 	encountered := map[kustomize.Image]bool{}
 	results := []kustomize.Image{}
@@ -130,7 +160,7 @@ func removeDockerImageDuplicates(dockerImages []kustomize.Image) []kustomize.Ima
 }
 
 // buildKustomization - Build Kustomize kustomization yaml definition object
-func buildKustomization(dockerImages []kustomize.Image) *types.Kustomization {
+func (s *Action) buildKustomization(dockerImages []kustomize.Image) *types.Kustomization {
 
 	return &types.Kustomization{
 		TypeMeta: types.TypeMeta{
@@ -142,7 +172,7 @@ func buildKustomization(dockerImages []kustomize.Image) *types.Kustomization {
 }
 
 // writeKustomizationFile - Write Kustomize kustomization yaml object to yaml file
-func writeKustomizationFile(kustomization *types.Kustomization, output string) error {
+func (s *Action) writeKustomizationFile(kustomization *types.Kustomization, output string) error {
 
 	outputFileName, fileErr := filepath.Abs(output + "/" + korp_utils.KustomizationFileName)
 	if fileErr != nil {
