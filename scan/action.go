@@ -27,6 +27,8 @@ type Action struct {
 	io Io
 }
 
+//go:generate moq -out mocks/io.go -pkg mocks . Io
+
 // Io - interface for all io functions used by scan
 type Io interface {
 	ListYamlFilesPaths(rootPath string) ([]string, error)
