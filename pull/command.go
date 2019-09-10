@@ -7,6 +7,8 @@ import (
 // BuildCommand - Build CLI application command
 func BuildCommand() *cli.Command {
 
+	action := Action{}
+
 	return &cli.Command{
 		Name:    "pull",
 		Aliases: []string{"p"},
@@ -20,6 +22,6 @@ func BuildCommand() *cli.Command {
 				Required: false,
 			},
 		},
-		Action: pull,
+		Action: action.pull,
 	}
 }

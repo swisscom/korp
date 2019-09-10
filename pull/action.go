@@ -13,8 +13,11 @@ import (
 	kust "sigs.k8s.io/kustomize/pkg/image"
 )
 
+type Action struct {
+}
+
 // pull - Pull Docker images listed in the kustomization file from remote to the local Docker registry
-func pull(c *cli.Context) error {
+func (p *Action) pull(c *cli.Context) error {
 
 	kstPath := c.String("kustomization-path")
 
@@ -24,7 +27,7 @@ func pull(c *cli.Context) error {
 		return loadErr
 	}
 
-	pullErr := pullDockerImages(dockerImages)
+	pullErr := p.pullDockerImages(dockerImages)
 	if pullErr != nil {
 		log.Error(pullErr)
 		return pullErr
@@ -34,7 +37,7 @@ func pull(c *cli.Context) error {
 }
 
 // pullDockerImages - Pull all Docker images from given list
-func pullDockerImages(dockerImages []kust.Image) error {
+func (p *Action) pullDockerImages(dockerImages []kust.Image) error {
 
 	if len(dockerImages) > 0 {
 
@@ -55,7 +58,7 @@ func pullDockerImages(dockerImages []kust.Image) error {
 
 		pullOk, pullKo := 0, 0
 		for _, img := range dockerImages {
-			if pullDockerImage(cli, &ctx, img.Name, img.NewTag) {
+			if p.pullDockerImage(cli, &ctx, img.Name, img.NewTag) {
 				pullOk++
 			} else {
 				pullKo++
@@ -70,7 +73,7 @@ func pullDockerImages(dockerImages []kust.Image) error {
 }
 
 // pullDockerImage -
-func pullDockerImage(cli *client.Client, ctx *context.Context, imageName, imageTag string) bool {
+func (p *Action) pullDockerImage(cli *client.Client, ctx *context.Context, imageName, imageTag string) bool {
 
 	imageRef := docker_utils.BuildCompleteDockerImage(imageName, imageTag)
 	pullErr := docker_utils.PullDockerImage(cli, ctx, imageName, imageTag, &types.ImagePullOptions{}, true)
