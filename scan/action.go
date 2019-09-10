@@ -84,7 +84,7 @@ func (s *Action) scan(c *cli.Context) error {
 func (s *Action) retrieveDockerImages(scanPath, registry string) ([]kustomize.Image, error) {
 
 	var dockerImages []kustomize.Image
-	filesPaths, yamlErr := file_utils.ListYamlFilesPaths(scanPath)
+	filesPaths, yamlErr := s.io.ListYamlFilesPaths(scanPath)
 	if yamlErr != nil {
 		// log.Error(yamlErr)
 		return nil, yamlErr
@@ -110,7 +110,7 @@ func (s *Action) retrieveDockerImages(scanPath, registry string) ([]kustomize.Im
 // listDockerImageReferences - List all Docker image reference in the given file path
 func (s *Action) listDockerImageReferences(filePath string) ([]string, error) {
 
-	fileContent, err := ioutil.ReadFile(filePath)
+	fileContent, err := s.io.ReadFile(filePath)
 	var dockerImagesRefs []string
 	var dockerImageRefRegex = regexp.MustCompile(dockerImageRefRegexStr)
 	for _, match := range dockerImageRefRegex.FindAllStringSubmatch(string(fileContent), -1) {
@@ -186,7 +186,7 @@ func (s *Action) writeKustomizationFile(kustomization *types.Kustomization, outp
 		return yamlErr
 	}
 
-	writeErr := ioutil.WriteFile(outputFileName, yamlContent, 0644)
+	writeErr := s.io.WriteFile(outputFileName, yamlContent, 0644)
 	if writeErr != nil {
 		// log.Error(writeErr)
 		return writeErr
