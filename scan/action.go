@@ -1,13 +1,11 @@
 package scan
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
 
 	"github.com/swisscom/korp/docker_utils"
-	"github.com/swisscom/korp/file_utils"
 	"github.com/swisscom/korp/korp_utils"
 	"github.com/swisscom/korp/string_utils"
 
@@ -45,17 +43,17 @@ type IoImpl struct {
 
 // ListYamlFilesPaths - real implementation of ListYamlFilesPaths backed by file_utils
 func (s IoImpl) ListYamlFilesPaths(rootPath string) ([]string, error) {
-	return file_utils.ListYamlFilesPaths(rootPath)
+	return s.listYamlFilesPaths(rootPath)
 }
 
 // ReadFile - real implementation of ReadFile backed by ioutil
 func (s IoImpl) ReadFile(filename string) ([]byte, error) {
-	return ioutil.ReadFile(filename)
+	return s.readFile(filename)
 }
 
 // WriteFile - real implementation of WriteFile backed by ioutil
 func (s IoImpl) WriteFile(filename string, data []byte, perm os.FileMode) error {
-	return ioutil.WriteFile(filename, data, perm)
+	return s.writeFile(filename, data, perm)
 }
 
 // scan - Collect images referenced in all yaml files in the path and create a kustomization file
