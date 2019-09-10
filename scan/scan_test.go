@@ -1,15 +1,16 @@
-package scan
+package scan_test
 
 import (
 	"testing"
 
 	"github.com/matryer/is"
+	"github.com/swisscom/korp/scan"
 	"github.com/urfave/cli"
 )
 
 func TestBuildCommand(t *testing.T) {
 
-	command := BuildCommand()
+	command := scan.BuildCommand()
 
 	t.Run("is called scan", func(t *testing.T) {
 		is := is.New(t)
