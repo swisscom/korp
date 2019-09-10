@@ -24,7 +24,7 @@ const (
 
 // Action - struct for scan action
 type Action struct {
-	io Io
+	Io Io
 }
 
 //go:generate moq -out mocks/io.go -pkg mocks . Io
@@ -59,7 +59,7 @@ func (s IoImpl) WriteFile(filename string, data []byte, perm os.FileMode) error 
 }
 
 // scan - Collect images referenced in all yaml files in the path and create a kustomization file
-func (s *Action) scan(c *cli.Context) error {
+func (s *Action) Scan(c *cli.Context) error {
 
 	scanPath := c.String("files")
 	registry := c.String("registry")
@@ -86,7 +86,7 @@ func (s *Action) scan(c *cli.Context) error {
 func (s *Action) retrieveDockerImages(scanPath, registry string) ([]kustomize.Image, error) {
 
 	var dockerImages []kustomize.Image
-	filesPaths, yamlErr := s.io.ListYamlFilesPaths(scanPath)
+	filesPaths, yamlErr := s.Io.ListYamlFilesPaths(scanPath)
 	if yamlErr != nil {
 		// log.Error(yamlErr)
 		return nil, yamlErr
@@ -112,7 +112,7 @@ func (s *Action) retrieveDockerImages(scanPath, registry string) ([]kustomize.Im
 // listDockerImageReferences - List all Docker image reference in the given file path
 func (s *Action) listDockerImageReferences(filePath string) ([]string, error) {
 
-	fileContent, err := s.io.ReadFile(filePath)
+	fileContent, err := s.Io.ReadFile(filePath)
 	var dockerImagesRefs []string
 	var dockerImageRefRegex = regexp.MustCompile(dockerImageRefRegexStr)
 	for _, match := range dockerImageRefRegex.FindAllStringSubmatch(string(fileContent), -1) {
@@ -188,7 +188,7 @@ func (s *Action) writeKustomizationFile(kustomization *types.Kustomization, outp
 		return yamlErr
 	}
 
-	writeErr := s.io.WriteFile(outputFileName, yamlContent, 0644)
+	writeErr := s.Io.WriteFile(outputFileName, yamlContent, 0644)
 	if writeErr != nil {
 		// log.Error(writeErr)
 		return writeErr

@@ -10,7 +10,7 @@ import (
 // BuildCommand - Build CLI application command
 func BuildCommand() *cli.Command {
 	scanIo := IoImpl{listYamlFilesPaths: file_utils.ListYamlFilesPaths, readFile: ioutil.ReadFile, writeFile: ioutil.WriteFile}
-	action := Action{io: scanIo}
+	action := Action{Io: scanIo}
 
 	return &cli.Command{
 		Name:    "scan",
@@ -39,6 +39,6 @@ func BuildCommand() *cli.Command {
 				Required: false,
 			},
 		},
-		Action: action.scan,
+		Action: action.Scan,
 	}
 }
