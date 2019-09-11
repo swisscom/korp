@@ -7,7 +7,6 @@ import (
 	"github.com/swisscom/korp/kustomize_utils"
 
 	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/client"
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
 	kust "sigs.k8s.io/kustomize/pkg/image"
@@ -73,7 +72,7 @@ func (p *Action) pullDockerImages(dockerImages []kust.Image) error {
 }
 
 // pullDockerImage -
-func (p *Action) pullDockerImage(cli *client.Client, ctx *context.Context, imageName, imageTag string) bool {
+func (p *Action) pullDockerImage(cli docker_utils.DockerClient, ctx *context.Context, imageName, imageTag string) bool {
 
 	imageRef := docker_utils.BuildCompleteDockerImage(imageName, imageTag)
 	pullErr := docker_utils.PullDockerImage(cli, ctx, imageName, imageTag, &types.ImagePullOptions{}, true)

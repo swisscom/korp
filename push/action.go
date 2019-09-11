@@ -7,7 +7,6 @@ import (
 	"github.com/swisscom/korp/kustomize_utils"
 
 	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/client"
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
 	kust "sigs.k8s.io/kustomize/pkg/image"
@@ -77,7 +76,7 @@ func tagAndPushDockerImages(dockerImages []kust.Image) error {
 }
 
 // tagDockerImage -
-func tagDockerImage(cli *client.Client, ctx *context.Context, imageName, imageTag, imageNameNew, imageTagNew string) (tagResult, pushResult bool) {
+func tagDockerImage(cli docker_utils.DockerClient, ctx *context.Context, imageName, imageTag, imageNameNew, imageTagNew string) (tagResult, pushResult bool) {
 
 	imageRef := docker_utils.BuildCompleteDockerImage(imageName, imageTag)
 	imageRefNew := docker_utils.BuildCompleteDockerImage(imageName, imageTag)
@@ -97,7 +96,7 @@ func tagDockerImage(cli *client.Client, ctx *context.Context, imageName, imageTa
 }
 
 // pushDockerImage -
-func pushDockerImage(cli *client.Client, ctx *context.Context, imageName, imageTag string) bool {
+func pushDockerImage(cli docker_utils.DockerClient, ctx *context.Context, imageName, imageTag string) bool {
 
 	// PLEASE NOTE: this is a required trick even with fake auth
 	pushOpt := types.ImagePushOptions{
