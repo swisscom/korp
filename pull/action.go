@@ -13,6 +13,12 @@ import (
 )
 
 type Action struct {
+	Io Io
+}
+
+type Io interface {
+	LoadKustomizationFile(kstPath string) ([]kust.Image, error)
+	OpenDockerClient() (docker_utils.DockerClient, error)
 }
 
 // pull - Pull Docker images listed in the kustomization file from remote to the local Docker registry
