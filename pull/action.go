@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/swisscom/korp/docker_utils"
-	"github.com/swisscom/korp/kustomize_utils"
 
 	"github.com/docker/docker/api/types"
 	log "github.com/sirupsen/logrus"
@@ -12,13 +11,29 @@ import (
 	kust "sigs.k8s.io/kustomize/pkg/image"
 )
 
+// Action - struct for pull action
 type Action struct {
 	Io Io
 }
 
+// Io - interface for all io functions used by pull
 type Io interface {
 	LoadKustomizationFile(kstPath string) ([]kust.Image, error)
 	OpenDockerClient() (docker_utils.DockerClient, error)
+}
+
+// IoImpl - real io implementation using kustomize_utils and docker_utils
+type IoImpl struct {
+	loadKustomizationFile func(kstPath string) ([]kust.Image, error)
+	openDockerClient      func() (docker_utils.DockerClient, error)
+}
+
+func (i IoImpl) LoadKustomizationFile(kstPath string) ([]kust.Image, error) {
+	return i.loadKustomizationFile(kstPath)
+}
+
+func (i IoImpl) OpenDockerClient() (docker_utils.DockerClient, error) {
+	return i.openDockerClient()
 }
 
 // pull - Pull Docker images listed in the kustomization file from remote to the local Docker registry
@@ -26,7 +41,7 @@ func (p *Action) pull(c *cli.Context) error {
 
 	kstPath := c.String("kustomization-path")
 
-	dockerImages, loadErr := kustomize_utils.LoadKustomizationFile(kstPath)
+	dockerImages, loadErr := p.Io.LoadKustomizationFile(kstPath)
 	if loadErr != nil {
 		log.Error(loadErr)
 		return loadErr
@@ -48,7 +63,7 @@ func (p *Action) pullDockerImages(dockerImages []kust.Image) error {
 
 		ctx := context.Background()
 
-		cli, cliErr := docker_utils.OpenDockerClient()
+		cli, cliErr := p.Io.OpenDockerClient()
 		if cliErr != nil {
 			// log.Error(cliErr)
 			return cliErr
