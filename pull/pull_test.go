@@ -11,8 +11,8 @@ import (
 	"github.com/matryer/is"
 	"github.com/swisscom/korp/docker_utils"
 	dockermocks "github.com/swisscom/korp/docker_utils/mocks"
+	pullmocks "github.com/swisscom/korp/io/mocks"
 	"github.com/swisscom/korp/pull"
-	pullmocks "github.com/swisscom/korp/pull/mocks"
 	"github.com/urfave/cli"
 	kustimage "sigs.k8s.io/kustomize/pkg/image"
 )
@@ -107,7 +107,7 @@ func getDockerClientMock(is is.I) docker_utils.DockerClient {
 	return &result
 }
 
-func getIoMocks(is is.I) pullmocks.IoMock {
+func getIoMocks(is is.I) pullmocks.PullPushIoMock {
 	loadKustomizationFileFunc := func(kstPath string) ([]kustimage.Image, error) {
 		image := kustimage.Image{
 			Name:    "bitnami/minideb",
@@ -121,7 +121,7 @@ func getIoMocks(is is.I) pullmocks.IoMock {
 		return getDockerClientMock(is), nil
 	}
 
-	return pullmocks.IoMock{
+	return pullmocks.PullPushIoMock{
 		LoadKustomizationFileFunc: loadKustomizationFileFunc,
 		OpenDockerClientFunc:      openDockerClientFunc,
 	}

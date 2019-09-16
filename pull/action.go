@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/swisscom/korp/docker_utils"
+	korpio "github.com/swisscom/korp/io"
 
 	"github.com/docker/docker/api/types"
 	log "github.com/sirupsen/logrus"
@@ -13,29 +14,7 @@ import (
 
 // Action - struct for pull action
 type Action struct {
-	Io Io
-}
-
-//go:generate moq -out mocks/io.go -pkg mocks . Io
-
-// Io - interface for all io functions used by pull
-type Io interface {
-	LoadKustomizationFile(kstPath string) ([]kust.Image, error)
-	OpenDockerClient() (docker_utils.DockerClient, error)
-}
-
-// IoImpl - real io implementation using kustomize_utils and docker_utils
-type IoImpl struct {
-	loadKustomizationFile func(kstPath string) ([]kust.Image, error)
-	openDockerClient      func() (docker_utils.DockerClient, error)
-}
-
-func (i IoImpl) LoadKustomizationFile(kstPath string) ([]kust.Image, error) {
-	return i.loadKustomizationFile(kstPath)
-}
-
-func (i IoImpl) OpenDockerClient() (docker_utils.DockerClient, error) {
-	return i.openDockerClient()
+	Io korpio.PullPushIo
 }
 
 // pull - Pull Docker images listed in the kustomization file from remote to the local Docker registry
