@@ -84,6 +84,7 @@ func getDockerClientMock(is is.I) docker_utils.DockerClient {
 	}
 
 	imagePullFunc := func(ctx context.Context, refStr string, options types.ImagePullOptions) (io.ReadCloser, error) {
+		is.Equal("docker.io/bitnami/minideb:latest", refStr) // uses correct image reference in pull call
 		return getReadCloserMock(), nil
 	}
 
@@ -108,7 +109,12 @@ func getDockerClientMock(is is.I) docker_utils.DockerClient {
 
 func getIoMocks(is is.I) pullmocks.IoMock {
 	loadKustomizationFileFunc := func(kstPath string) ([]kustimage.Image, error) {
-		return []kustimage.Image{}, nil
+		image := kustimage.Image{
+			Name:    "bitnami/minideb",
+			NewName: "testregistry/bitnami/minideb",
+			NewTag:  "latest",
+		}
+		return []kustimage.Image{image}, nil
 	}
 
 	openDockerClientFunc := func() (docker_utils.DockerClient, error) {
@@ -130,9 +136,7 @@ func TestPullAction(t *testing.T) {
 			Io: &ioMocks,
 		}
 		set := flag.NewFlagSet("test", 0)
-		set.String("files", "/test/path/files", "usage files")
-		set.String("registry", "registry.example.com", "usage registry")
-		set.String("output", "/test/path/files", "usage output")
+		set.String("kustomization-path", "/test/path", "usage kustomization-path")
 		context := cli.NewContext(nil, set, nil)
 		action.Pull(context)
 	})
