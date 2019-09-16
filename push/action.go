@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/swisscom/korp/docker_utils"
-	"github.com/swisscom/korp/kustomize_utils"
+	korpio "github.com/swisscom/korp/io"
 
 	"github.com/docker/docker/api/types"
 	log "github.com/sirupsen/logrus"
@@ -12,18 +12,23 @@ import (
 	kust "sigs.k8s.io/kustomize/pkg/image"
 )
 
-// push - Push Docker images listed in the kustomization file to the new Docker registry
-func push(c *cli.Context) error {
+// Action - struct for push action
+type Action struct {
+	Io korpio.PullPushIo
+}
+
+// Push - Push Docker images listed in the kustomization file to the new Docker registry
+func (p *Action) Push(c *cli.Context) error {
 
 	kstPath := c.String("kustomization-path")
 
-	dockerImages, loadErr := kustomize_utils.LoadKustomizationFile(kstPath)
+	dockerImages, loadErr := p.Io.LoadKustomizationFile(kstPath)
 	if loadErr != nil {
 		log.Error(loadErr)
 		return loadErr
 	}
 
-	tagPushErr := tagAndPushDockerImages(dockerImages)
+	tagPushErr := p.tagAndPushDockerImages(dockerImages)
 	if tagPushErr != nil {
 		log.Error(tagPushErr)
 		return tagPushErr
@@ -33,13 +38,13 @@ func push(c *cli.Context) error {
 }
 
 // tagAndPushDockerImages - Tag and push all Docker images from given list
-func tagAndPushDockerImages(dockerImages []kust.Image) error {
+func (p *Action) tagAndPushDockerImages(dockerImages []kust.Image) error {
 
 	if len(dockerImages) > 0 {
 
 		ctx := context.Background()
 
-		cli, cliErr := docker_utils.OpenDockerClient()
+		cli, cliErr := p.Io.OpenDockerClient()
 		if cliErr != nil {
 			// log.Error(cliErr)
 			return cliErr
@@ -54,7 +59,7 @@ func tagAndPushDockerImages(dockerImages []kust.Image) error {
 
 		tagOk, tagKo, pushOk, pushKo := 0, 0, 0, 0
 		for _, img := range dockerImages {
-			tagResult, pushResult := tagDockerImage(cli, &ctx, img.Name, img.NewTag, img.NewName, img.NewTag)
+			tagResult, pushResult := p.tagDockerImage(cli, &ctx, img.Name, img.NewTag, img.NewName, img.NewTag)
 			if tagResult {
 				tagOk++
 			} else {
@@ -76,7 +81,7 @@ func tagAndPushDockerImages(dockerImages []kust.Image) error {
 }
 
 // tagDockerImage -
-func tagDockerImage(cli docker_utils.DockerClient, ctx *context.Context, imageName, imageTag, imageNameNew, imageTagNew string) (tagResult, pushResult bool) {
+func (p *Action) tagDockerImage(cli docker_utils.DockerClient, ctx *context.Context, imageName, imageTag, imageNameNew, imageTagNew string) (tagResult, pushResult bool) {
 
 	imageRef := docker_utils.BuildCompleteDockerImage(imageName, imageTag)
 	imageRefNew := docker_utils.BuildCompleteDockerImage(imageName, imageTag)
@@ -88,7 +93,7 @@ func tagDockerImage(cli docker_utils.DockerClient, ctx *context.Context, imageNa
 
 	log.Infof("Tag %s created", imageRefNew)
 
-	if pushDockerImage(cli, ctx, imageNameNew, imageTagNew) {
+	if p.pushDockerImage(cli, ctx, imageNameNew, imageTagNew) {
 		return true, true
 	}
 
@@ -96,7 +101,7 @@ func tagDockerImage(cli docker_utils.DockerClient, ctx *context.Context, imageNa
 }
 
 // pushDockerImage -
-func pushDockerImage(cli docker_utils.DockerClient, ctx *context.Context, imageName, imageTag string) bool {
+func (p *Action) pushDockerImage(cli docker_utils.DockerClient, ctx *context.Context, imageName, imageTag string) bool {
 
 	// PLEASE NOTE: this is a required trick even with fake auth
 	pushOpt := types.ImagePushOptions{
