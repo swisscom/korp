@@ -17,7 +17,7 @@ type Action struct {
 	Io korpio.PullPushIo
 }
 
-// pull - Pull Docker images listed in the kustomization file from remote to the local Docker registry
+// Pull - Pull Docker images listed in the kustomization file from remote to the local Docker registry
 func (p *Action) Pull(c *cli.Context) error {
 
 	kstPath := c.String("kustomization-path")
