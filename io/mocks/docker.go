@@ -62,10 +62,13 @@ func getDockerClientMock(is is.I) docker_utils.DockerClient {
 	}
 
 	imagePushFunc := func(ctx context.Context, image string, options types.ImagePushOptions) (io.ReadCloser, error) {
+		is.Equal("registry.example.com/bitnami/minideb:latest", image)
 		return getReadCloserMock(), nil
 	}
 
 	imageTagFunc := func(ctx context.Context, source string, target string) error {
+		is.Equal("docker.io/bitnami/minideb:latest", source)
+		is.Equal("registry.example.com/bitnami/minideb:latest", target)
 		return nil
 	}
 
@@ -85,7 +88,7 @@ func GetIoMocks(is is.I) PullPushIoMock {
 	loadKustomizationFileFunc := func(kstPath string) ([]kustimage.Image, error) {
 		image := kustimage.Image{
 			Name:    "bitnami/minideb",
-			NewName: "testregistry/bitnami/minideb",
+			NewName: "registry.example.com/bitnami/minideb",
 			NewTag:  "latest",
 		}
 		return []kustimage.Image{image}, nil
