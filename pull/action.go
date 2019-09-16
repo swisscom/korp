@@ -4,27 +4,52 @@ import (
 	"context"
 
 	"github.com/swisscom/korp/docker_utils"
-	"github.com/swisscom/korp/kustomize_utils"
 
 	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/client"
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
 	kust "sigs.k8s.io/kustomize/pkg/image"
 )
 
+// Action - struct for pull action
+type Action struct {
+	Io Io
+}
+
+//go:generate moq -out mocks/io.go -pkg mocks . Io
+
+// Io - interface for all io functions used by pull
+type Io interface {
+	LoadKustomizationFile(kstPath string) ([]kust.Image, error)
+	OpenDockerClient() (docker_utils.DockerClient, error)
+}
+
+// IoImpl - real io implementation using kustomize_utils and docker_utils
+type IoImpl struct {
+	loadKustomizationFile func(kstPath string) ([]kust.Image, error)
+	openDockerClient      func() (docker_utils.DockerClient, error)
+}
+
+func (i IoImpl) LoadKustomizationFile(kstPath string) ([]kust.Image, error) {
+	return i.loadKustomizationFile(kstPath)
+}
+
+func (i IoImpl) OpenDockerClient() (docker_utils.DockerClient, error) {
+	return i.openDockerClient()
+}
+
 // pull - Pull Docker images listed in the kustomization file from remote to the local Docker registry
-func pull(c *cli.Context) error {
+func (p *Action) Pull(c *cli.Context) error {
 
 	kstPath := c.String("kustomization-path")
 
-	dockerImages, loadErr := kustomize_utils.LoadKustomizationFile(kstPath)
+	dockerImages, loadErr := p.Io.LoadKustomizationFile(kstPath)
 	if loadErr != nil {
 		log.Error(loadErr)
 		return loadErr
 	}
 
-	pullErr := pullDockerImages(dockerImages)
+	pullErr := p.pullDockerImages(dockerImages)
 	if pullErr != nil {
 		log.Error(pullErr)
 		return pullErr
@@ -34,13 +59,13 @@ func pull(c *cli.Context) error {
 }
 
 // pullDockerImages - Pull all Docker images from given list
-func pullDockerImages(dockerImages []kust.Image) error {
+func (p *Action) pullDockerImages(dockerImages []kust.Image) error {
 
 	if len(dockerImages) > 0 {
 
 		ctx := context.Background()
 
-		cli, cliErr := docker_utils.OpenDockerClient()
+		cli, cliErr := p.Io.OpenDockerClient()
 		if cliErr != nil {
 			// log.Error(cliErr)
 			return cliErr
@@ -55,7 +80,7 @@ func pullDockerImages(dockerImages []kust.Image) error {
 
 		pullOk, pullKo := 0, 0
 		for _, img := range dockerImages {
-			if pullDockerImage(cli, &ctx, img.Name, img.NewTag) {
+			if p.pullDockerImage(cli, &ctx, img.Name, img.NewTag) {
 				pullOk++
 			} else {
 				pullKo++
@@ -70,7 +95,7 @@ func pullDockerImages(dockerImages []kust.Image) error {
 }
 
 // pullDockerImage -
-func pullDockerImage(cli *client.Client, ctx *context.Context, imageName, imageTag string) bool {
+func (p *Action) pullDockerImage(cli docker_utils.DockerClient, ctx *context.Context, imageName, imageTag string) bool {
 
 	imageRef := docker_utils.BuildCompleteDockerImage(imageName, imageTag)
 	pullErr := docker_utils.PullDockerImage(cli, ctx, imageName, imageTag, &types.ImagePullOptions{}, true)

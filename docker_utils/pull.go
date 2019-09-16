@@ -5,12 +5,11 @@ import (
 	"io"
 
 	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/client"
 	log "github.com/sirupsen/logrus"
 )
 
 // PullDockerImage - Pull Docker image
-func PullDockerImage(cli *client.Client, ctx *context.Context,
+func PullDockerImage(cli DockerClient, ctx *context.Context,
 	imageName, imageTag string, options *types.ImagePullOptions, normalize bool) error {
 
 	if normalize {

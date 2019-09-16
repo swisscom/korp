@@ -9,12 +9,11 @@ import (
 	"github.com/swisscom/korp/cli_utils"
 
 	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/client"
 	log "github.com/sirupsen/logrus"
 )
 
 // CheckDockerDaemon - Check wheather the Docker daemon is running, if the method starts it
-func CheckDockerDaemon(cli *client.Client, ctx *context.Context) error {
+func CheckDockerDaemon(cli DockerClient, ctx *context.Context) error {
 
 	if !CheckDockerDaemonRunning(cli, ctx) {
 		log.Warn("Docker daemon NOT RUNNING")
@@ -28,14 +27,14 @@ func CheckDockerDaemon(cli *client.Client, ctx *context.Context) error {
 }
 
 // CheckDockerDaemonRunning - Check wheather the Docker daemon is running (making a simple request)
-func CheckDockerDaemonRunning(cli *client.Client, ctx *context.Context) bool {
+func CheckDockerDaemonRunning(cli DockerClient, ctx *context.Context) bool {
 
 	_, listErr := cli.ContainerList(*ctx, types.ContainerListOptions{})
 	return listErr == nil
 }
 
 // StartDockerDaemon - Start up the Docker deamon based on the current OS
-func StartDockerDaemon(cli *client.Client, ctx *context.Context) error {
+func StartDockerDaemon(cli DockerClient, ctx *context.Context) error {
 
 	log.Info("Starting Docker daemon...")
 
@@ -62,7 +61,7 @@ func StartDockerDaemon(cli *client.Client, ctx *context.Context) error {
 }
 
 // waitDockerDaemon - Wait for Docker daemon to be up&running
-func waitDockerDaemon(cli *client.Client, ctx *context.Context) {
+func waitDockerDaemon(cli DockerClient, ctx *context.Context) {
 
 	for {
 		_, err := cli.ContainerList(*ctx, types.ContainerListOptions{})

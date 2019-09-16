@@ -5,12 +5,11 @@ import (
 	"io"
 
 	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/client"
 	log "github.com/sirupsen/logrus"
 )
 
 // PushDockerImage - Push Docker image to Docker registry
-func PushDockerImage(cli *client.Client, ctx *context.Context,
+func PushDockerImage(cli DockerClient, ctx *context.Context,
 	imageName, imageTag string, options *types.ImagePushOptions, normalize bool) error {
 
 	if normalize {

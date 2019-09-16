@@ -1,11 +1,22 @@
 package pull
 
 import (
+	"github.com/swisscom/korp/docker_utils"
+	"github.com/swisscom/korp/kustomize_utils"
 	"github.com/urfave/cli"
 )
 
 // BuildCommand - Build CLI application command
 func BuildCommand() *cli.Command {
+
+	io := IoImpl{
+		openDockerClient:      docker_utils.OpenDockerClient,
+		loadKustomizationFile: kustomize_utils.LoadKustomizationFile,
+	}
+
+	action := Action{
+		Io: io,
+	}
 
 	return &cli.Command{
 		Name:    "pull",
@@ -20,6 +31,6 @@ func BuildCommand() *cli.Command {
 				Required: false,
 			},
 		},
-		Action: pull,
+		Action: action.Pull,
 	}
 }

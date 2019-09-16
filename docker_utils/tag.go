@@ -2,12 +2,10 @@ package docker_utils
 
 import (
 	"context"
-
-	"github.com/docker/docker/client"
 )
 
 // TagDockerImage - Tag Docker image
-func TagDockerImage(cli *client.Client, ctx *context.Context,
+func TagDockerImage(cli DockerClient, ctx *context.Context,
 	imageName, imageTag, imageNameNew, imageTagNew string, normalize bool) error {
 
 	if normalize {
