@@ -12,16 +12,16 @@ import (
 	kustimage "sigs.k8s.io/kustomize/pkg/image"
 )
 
-type ReadCloserMockImpl struct {
+type readCloserMockImpl struct {
 	readFunc  func(p []byte) (n int, err error)
 	closeFunc func() error
 }
 
-func (r ReadCloserMockImpl) Read(p []byte) (n int, err error) {
+func (r readCloserMockImpl) Read(p []byte) (n int, err error) {
 	return r.readFunc(p)
 }
 
-func (r ReadCloserMockImpl) Close() error {
+func (r readCloserMockImpl) Close() error {
 	return r.closeFunc()
 }
 
@@ -35,12 +35,12 @@ func getReadCloserMock() io.ReadCloser {
 		return nil
 	}
 
-	return ReadCloserMockImpl{
+	return readCloserMockImpl{
 		readFunc, closeFunc,
 	}
 }
 
-func GetDockerClientMock(is is.I) docker_utils.DockerClient {
+func getDockerClientMock(is is.I) docker_utils.DockerClient {
 
 	closeFunc := func() error {
 		return nil
@@ -80,6 +80,7 @@ func GetDockerClientMock(is is.I) docker_utils.DockerClient {
 	return &result
 }
 
+// GetIoMocks -- get mock implementation of PullPushIo
 func GetIoMocks(is is.I) PullPushIoMock {
 	loadKustomizationFileFunc := func(kstPath string) ([]kustimage.Image, error) {
 		image := kustimage.Image{
@@ -91,7 +92,7 @@ func GetIoMocks(is is.I) PullPushIoMock {
 	}
 
 	openDockerClientFunc := func() (docker_utils.DockerClient, error) {
-		return GetDockerClientMock(is), nil
+		return getDockerClientMock(is), nil
 	}
 
 	return PullPushIoMock{
