@@ -8,6 +8,9 @@ import (
 	"github.com/docker/docker/client"
 )
 
+//go:generate moq -out mocks/dockerclient.go -pkg mocks . DockerClient
+
+// DockerClient - interface for all functionality required from the docker client
 type DockerClient interface {
 	ContainerList(ctx context.Context, options types.ContainerListOptions) ([]types.Container, error)
 	ImagePull(ctx context.Context, refStr string, options types.ImagePullOptions) (io.ReadCloser, error)

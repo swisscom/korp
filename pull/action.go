@@ -16,6 +16,8 @@ type Action struct {
 	Io Io
 }
 
+//go:generate moq -out mocks/io.go -pkg mocks . Io
+
 // Io - interface for all io functions used by pull
 type Io interface {
 	LoadKustomizationFile(kstPath string) ([]kust.Image, error)

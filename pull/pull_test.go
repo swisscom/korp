@@ -29,3 +29,9 @@ func TestPullCommand(t *testing.T) {
 
 	})
 }
+
+func TestPullAction(t *testing.T) {
+
+	t.Run("reads a kustomization yaml file and pulls all images", func(t *testing.T) {
+	})
+}
