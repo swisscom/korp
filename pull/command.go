@@ -31,6 +31,6 @@ func BuildCommand() *cli.Command {
 				Required: false,
 			},
 		},
-		Action: action.pull,
+		Action: action.Pull,
 	}
 }

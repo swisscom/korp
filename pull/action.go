@@ -39,7 +39,7 @@ func (i IoImpl) OpenDockerClient() (docker_utils.DockerClient, error) {
 }
 
 // pull - Pull Docker images listed in the kustomization file from remote to the local Docker registry
-func (p *Action) pull(c *cli.Context) error {
+func (p *Action) Pull(c *cli.Context) error {
 
 	kstPath := c.String("kustomization-path")
 
