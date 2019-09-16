@@ -1,11 +1,23 @@
 package push
 
 import (
+	"github.com/swisscom/korp/docker_utils"
+	korpio "github.com/swisscom/korp/io"
+	"github.com/swisscom/korp/kustomize_utils"
 	"github.com/urfave/cli"
 )
 
 // BuildCommand - Build CLI application command
 func BuildCommand() *cli.Command {
+
+	io := korpio.PullPushIoImpl{
+		OpenDockerClientFunc:      docker_utils.OpenDockerClient,
+		LoadKustomizationFileFunc: kustomize_utils.LoadKustomizationFile,
+	}
+
+	action := Action{
+		Io: io,
+	}
 
 	return &cli.Command{
 		Name:    "push",
@@ -20,6 +32,6 @@ func BuildCommand() *cli.Command {
 				Required: false,
 			},
 		},
-		Action: push,
+		Action: action.Push,
 	}
 }

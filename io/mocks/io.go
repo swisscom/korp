@@ -5,26 +5,26 @@ package mocks
 
 import (
 	"github.com/swisscom/korp/docker_utils"
-	"github.com/swisscom/korp/pull"
+	"github.com/swisscom/korp/io"
 	"sigs.k8s.io/kustomize/pkg/image"
 	"sync"
 )
 
 var (
-	lockIoMockLoadKustomizationFile sync.RWMutex
-	lockIoMockOpenDockerClient      sync.RWMutex
+	lockPullPushIoMockLoadKustomizationFile sync.RWMutex
+	lockPullPushIoMockOpenDockerClient      sync.RWMutex
 )
 
-// Ensure, that IoMock does implement Io.
+// Ensure, that PullPushIoMock does implement PullPushIo.
 // If this is not the case, regenerate this file with moq.
-var _ pull.Io = &IoMock{}
+var _ io.PullPushIo = &PullPushIoMock{}
 
-// IoMock is a mock implementation of Io.
+// PullPushIoMock is a mock implementation of PullPushIo.
 //
-//     func TestSomethingThatUsesIo(t *testing.T) {
+//     func TestSomethingThatUsesPullPushIo(t *testing.T) {
 //
-//         // make and configure a mocked Io
-//         mockedIo := &IoMock{
+//         // make and configure a mocked PullPushIo
+//         mockedPullPushIo := &PullPushIoMock{
 //             LoadKustomizationFileFunc: func(kstPath string) ([]image.Image, error) {
 // 	               panic("mock out the LoadKustomizationFile method")
 //             },
@@ -33,11 +33,11 @@ var _ pull.Io = &IoMock{}
 //             },
 //         }
 //
-//         // use mockedIo in code that requires Io
+//         // use mockedPullPushIo in code that requires PullPushIo
 //         // and then make assertions.
 //
 //     }
-type IoMock struct {
+type PullPushIoMock struct {
 	// LoadKustomizationFileFunc mocks the LoadKustomizationFile method.
 	LoadKustomizationFileFunc func(kstPath string) ([]image.Image, error)
 
@@ -58,58 +58,58 @@ type IoMock struct {
 }
 
 // LoadKustomizationFile calls LoadKustomizationFileFunc.
-func (mock *IoMock) LoadKustomizationFile(kstPath string) ([]image.Image, error) {
+func (mock *PullPushIoMock) LoadKustomizationFile(kstPath string) ([]image.Image, error) {
 	if mock.LoadKustomizationFileFunc == nil {
-		panic("IoMock.LoadKustomizationFileFunc: method is nil but Io.LoadKustomizationFile was just called")
+		panic("PullPushIoMock.LoadKustomizationFileFunc: method is nil but PullPushIo.LoadKustomizationFile was just called")
 	}
 	callInfo := struct {
 		KstPath string
 	}{
 		KstPath: kstPath,
 	}
-	lockIoMockLoadKustomizationFile.Lock()
+	lockPullPushIoMockLoadKustomizationFile.Lock()
 	mock.calls.LoadKustomizationFile = append(mock.calls.LoadKustomizationFile, callInfo)
-	lockIoMockLoadKustomizationFile.Unlock()
+	lockPullPushIoMockLoadKustomizationFile.Unlock()
 	return mock.LoadKustomizationFileFunc(kstPath)
 }
 
 // LoadKustomizationFileCalls gets all the calls that were made to LoadKustomizationFile.
 // Check the length with:
-//     len(mockedIo.LoadKustomizationFileCalls())
-func (mock *IoMock) LoadKustomizationFileCalls() []struct {
+//     len(mockedPullPushIo.LoadKustomizationFileCalls())
+func (mock *PullPushIoMock) LoadKustomizationFileCalls() []struct {
 	KstPath string
 } {
 	var calls []struct {
 		KstPath string
 	}
-	lockIoMockLoadKustomizationFile.RLock()
+	lockPullPushIoMockLoadKustomizationFile.RLock()
 	calls = mock.calls.LoadKustomizationFile
-	lockIoMockLoadKustomizationFile.RUnlock()
+	lockPullPushIoMockLoadKustomizationFile.RUnlock()
 	return calls
 }
 
 // OpenDockerClient calls OpenDockerClientFunc.
-func (mock *IoMock) OpenDockerClient() (docker_utils.DockerClient, error) {
+func (mock *PullPushIoMock) OpenDockerClient() (docker_utils.DockerClient, error) {
 	if mock.OpenDockerClientFunc == nil {
-		panic("IoMock.OpenDockerClientFunc: method is nil but Io.OpenDockerClient was just called")
+		panic("PullPushIoMock.OpenDockerClientFunc: method is nil but PullPushIo.OpenDockerClient was just called")
 	}
 	callInfo := struct {
 	}{}
-	lockIoMockOpenDockerClient.Lock()
+	lockPullPushIoMockOpenDockerClient.Lock()
 	mock.calls.OpenDockerClient = append(mock.calls.OpenDockerClient, callInfo)
-	lockIoMockOpenDockerClient.Unlock()
+	lockPullPushIoMockOpenDockerClient.Unlock()
 	return mock.OpenDockerClientFunc()
 }
 
 // OpenDockerClientCalls gets all the calls that were made to OpenDockerClient.
 // Check the length with:
-//     len(mockedIo.OpenDockerClientCalls())
-func (mock *IoMock) OpenDockerClientCalls() []struct {
+//     len(mockedPullPushIo.OpenDockerClientCalls())
+func (mock *PullPushIoMock) OpenDockerClientCalls() []struct {
 } {
 	var calls []struct {
 	}
-	lockIoMockOpenDockerClient.RLock()
+	lockPullPushIoMockOpenDockerClient.RLock()
 	calls = mock.calls.OpenDockerClient
-	lockIoMockOpenDockerClient.RUnlock()
+	lockPullPushIoMockOpenDockerClient.RUnlock()
 	return calls
 }
