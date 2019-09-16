@@ -123,9 +123,9 @@ PROG=korp source autocomplete-scripts/zsh_autocomplete
 
 ### testing
 
-- [ ] scan
-- [ ] pull
-- [ ] push
+- [x] scan
+- [x] pull
+- [x] push
 - [ ] all
 - [ ] autocompletion
 
