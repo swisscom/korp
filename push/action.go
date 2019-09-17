@@ -84,7 +84,7 @@ func (p *Action) tagAndPushDockerImages(dockerImages []kust.Image) error {
 func (p *Action) tagDockerImage(cli docker_utils.DockerClient, ctx *context.Context, imageName, imageTag, imageNameNew, imageTagNew string) (tagResult, pushResult bool) {
 
 	imageRef := docker_utils.BuildCompleteDockerImage(imageName, imageTag)
-	imageRefNew := docker_utils.BuildCompleteDockerImage(imageName, imageTag)
+	imageRefNew := docker_utils.BuildCompleteDockerImage(imageNameNew, imageTag)
 	tagErr := docker_utils.TagDockerImage(cli, ctx, imageName, imageTag, imageNameNew, imageTagNew, true)
 	if tagErr != nil {
 		log.Errorf("Error tagging Docker image %s to %s: %s", imageRef, imageRefNew, tagErr.Error())
