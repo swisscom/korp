@@ -99,6 +99,8 @@ helm template install/kubernetes/helm/istio-init --name istio-init --namespace i
 helm template install/kubernetes/helm/istio --name istio --namespace istio-system --output-dir $HOME/tmp/istio
 ```
 
+### Scan the rendered yaml files for image references
+
 4. Scan the `istio-init` yaml files. You will see a `kustomization.yml` file being created with one `images` entry.
 
 ```
@@ -112,6 +114,8 @@ korp scan . -r your-registry.example.org
 cd $HOME/tmp/istio/istio
 korp scan . -r your-registry.example.org
 ```
+
+### Pull the referenced images
 
 6. Pull the `istio-init` images.
 
@@ -127,6 +131,8 @@ cd $HOME/tmp/istio/istio
 korp pull
 ```
 
+### Push the referenced images to your registry
+
 8. Push the `istio-init` images. Depending on your network and proxy setup, you might need to change your network connection.
 
 ```
@@ -140,6 +146,8 @@ korp push
 cd $HOME/tmp/istio/istio
 korp push
 ```
+
+### Apply the patches to your yaml files and deploy the components
 
 10. Apply the yaml files for `istio-init` using `kustomize`
 
