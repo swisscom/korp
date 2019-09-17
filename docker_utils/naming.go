@@ -58,5 +58,9 @@ func ParseDockerImageTag(imageRef string) string {
 // BuildCompleteDockerImage - Build the complete Docker image name from name and tag
 func BuildCompleteDockerImage(imageName, imageTag string) string {
 
-	return imageName + ":" + imageTag
+	if len(imageTag) > 0 {
+		return imageName + ":" + imageTag
+	}
+	return imageName
+
 }
