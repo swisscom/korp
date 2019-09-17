@@ -87,7 +87,7 @@ func (p *Action) tagDockerImage(cli docker_utils.DockerClient, ctx *context.Cont
 
 	imageRef := docker_utils.BuildCompleteDockerImage(imageName, imageTag)
 	imageRefNew := docker_utils.BuildCompleteDockerImage(imageNameNew, imageTag)
-	tagErr := docker_utils.TagDockerImage(cli, ctx, imageName, imageTag, imageNameNew, imageTagNew, true)
+	tagErr := docker_utils.TagDockerImage(cli, ctx, imageName, imageTag, imageNameNew, imageTagNew, false)
 	if tagErr != nil {
 		log.Errorf("Error tagging Docker image %s to %s: %s", imageRef, imageRefNew, tagErr.Error())
 		return false, false
