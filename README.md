@@ -75,7 +75,7 @@ korp push
 
 ## A Complete Example
 
-Let's look at how to use `korp` on a real world example. Let's assume you want to deploy [Istio](https://github.com/istio/istio) in a corporate environment which has its own Docker registry. These are the steps which you would need to execute
+Let's look at how to use `korp` on a real world example. Let's assume you want to deploy [Istio](https://github.com/istio/istio) in a corporate environment which has its own Docker registry. These are the steps which you would need to execute.
 
 ### Render the Istio Helm Charts
 
