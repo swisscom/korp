@@ -71,11 +71,100 @@ korp push
    kubectl apply -k .
    ```
 
-### Autocompletion
+---
+
+## A Complete Example
+
+Let's look at how to use `korp` on a real world example. Let's assume you want to deploy [Istio](https://github.com/istio/istio) in a corporate environment which has its own Docker registry. These are the steps which you would need to execute
+
+### Render the Istio Helm Charts
+
+At the time of writing Istio is deployed using two Helm charts `istio-init` and `istio`. Since `korp` works with yaml files, you need to first render these two charts against your `values.yml` using the command `helm template`.
+
+1. Clone the Istio repo
+
+```
+git clone https://github.com/istio/istio.git
+cd istio
+```
+
+2. Make the desired changes to `install/kubernetes/helm/istio-init/values.yaml` and `install/kubernetes/helm/istio/values.yaml`. You can ignore the fact that the `hub` attributes in these files point to public registries. This will be patched with the help of `korp` when the yaml files are rendered.
+
+3. Render the Helm charts to two directories.
+
+```
+mkdir $HOME/tmp/istio-init
+mkdir $HOME/tmp/istio
+helm template install/kubernetes/helm/istio-init --name istio-init --namespace istio-system --output-dir $HOME/tmp/istio-init
+helm template install/kubernetes/helm/istio --name istio --namespace istio-system --output-dir $HOME/tmp/istio
+```
+
+4. Scan the `istio-init` yaml files. You will see a `kustomization.yml` file being created with one `images` entry.
+
+```
+cd $HOME/tmp/istio-init/istio-init
+korp scan . -r your-registry.example.org
+```
+
+5. Scan the `istio` yaml files. You will see a `kustomization.yml` file being created with various `images` entries.
+
+```
+cd $HOME/tmp/istio/istio
+korp scan . -r your-registry.example.org
+```
+
+6. Pull the `istio-init` images.
+
+```
+cd $HOME/tmp/istio-init/istio-init
+korp pull
+```
+
+7. Pull the `istio` images.
+
+```
+cd $HOME/tmp/istio/istio
+korp pull
+```
+
+8. Push the `istio-init` images. Depending on your network and proxy setup, you might need to change your network connection.
+
+```
+cd $HOME/tmp/istio-init/istio-init
+korp push
+```
+
+9. Push the `istio` images.
+
+```
+cd $HOME/tmp/istio/istio
+korp push
+```
+
+10. Apply the yaml files for `istio-init` using `kustomize`
+
+```
+cd $HOME/tmp/istio-init/istio-init
+kubectl create ns istio-system
+kustomize edit add resource **/!(kustomization).yaml
+kubectl apply -k .
+```
+
+11. Apply the yaml files for `istio` using `kustomize`
+
+```
+cd $HOME/tmp/istio/istio
+kustomize edit add resource **/!(kustomization).yaml
+kubectl apply -k .
+```
+
+---
+
+## Autocompletion
 
 Source the `autocomplete-scripts/*_autocomplete` file in your `.bashrc | .zshrc` file while setting the `PROG` variable to the name of your program.
 
-#### Method 1
+### Method 1
 
 ```
 go build .
@@ -84,7 +173,7 @@ source <(./korp autocompletion zsh)
 # now play with tab
 ```
 
-#### Method 2
+### Method 2
 
 ```
 go build .
