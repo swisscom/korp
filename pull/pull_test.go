@@ -19,9 +19,9 @@ func TestPullCommand(t *testing.T) {
 		is.Equal("pull", command.Name)
 	})
 
-	t.Run("has one flag", func(t *testing.T) {
+	t.Run("has three flags", func(t *testing.T) {
 		is := is.New(t)
-		is.Equal(1, len(command.Flags)) // must contain 1 flag
+		is.Equal(3, len(command.Flags)) // must contain 3 flags
 	})
 
 	t.Run("has a string flag called kustomization-path", func(t *testing.T) {
@@ -29,6 +29,12 @@ func TestPullCommand(t *testing.T) {
 		stringFlag, ok := command.Flags[0].(cli.StringFlag)
 		is.True(ok)
 		is.Equal("kustomization-path, k", stringFlag.Name)
+		stringFlag, ok = command.Flags[1].(cli.StringFlag)
+		is.True(ok)
+		is.Equal("username, u", stringFlag.Name) // the second flag must be called username
+		stringFlag, ok = command.Flags[2].(cli.StringFlag)
+		is.True(ok)
+		is.Equal("password, p", stringFlag.Name) // the third flag must be called username
 
 	})
 }

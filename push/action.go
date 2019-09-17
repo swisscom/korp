@@ -21,6 +21,8 @@ type Action struct {
 func (p *Action) Push(c *cli.Context) error {
 
 	kstPath := c.String("kustomization-path")
+	username := c.String("username")
+	password := c.String("password")
 
 	dockerImages, loadErr := p.Io.LoadKustomizationFile(kstPath)
 	if loadErr != nil {
@@ -28,7 +30,7 @@ func (p *Action) Push(c *cli.Context) error {
 		return loadErr
 	}
 
-	tagPushErr := p.tagAndPushDockerImages(dockerImages)
+	tagPushErr := p.tagAndPushDockerImages(dockerImages, username, password)
 	if tagPushErr != nil {
 		log.Error(tagPushErr)
 		return tagPushErr
@@ -38,7 +40,7 @@ func (p *Action) Push(c *cli.Context) error {
 }
 
 // tagAndPushDockerImages - Tag and push all Docker images from given list
-func (p *Action) tagAndPushDockerImages(dockerImages []kust.Image) error {
+func (p *Action) tagAndPushDockerImages(dockerImages []kust.Image, username, password string) error {
 
 	if len(dockerImages) > 0 {
 
@@ -59,7 +61,7 @@ func (p *Action) tagAndPushDockerImages(dockerImages []kust.Image) error {
 
 		tagOk, tagKo, pushOk, pushKo := 0, 0, 0, 0
 		for _, img := range dockerImages {
-			tagResult, pushResult := p.tagDockerImage(cli, &ctx, img.Name, img.NewTag, img.NewName, img.NewTag)
+			tagResult, pushResult := p.tagDockerImage(cli, &ctx, img.Name, img.NewTag, img.NewName, img.NewTag, username, password)
 			if tagResult {
 				tagOk++
 			} else {
@@ -81,7 +83,7 @@ func (p *Action) tagAndPushDockerImages(dockerImages []kust.Image) error {
 }
 
 // tagDockerImage -
-func (p *Action) tagDockerImage(cli docker_utils.DockerClient, ctx *context.Context, imageName, imageTag, imageNameNew, imageTagNew string) (tagResult, pushResult bool) {
+func (p *Action) tagDockerImage(cli docker_utils.DockerClient, ctx *context.Context, imageName, imageTag, imageNameNew, imageTagNew, username, password string) (tagResult, pushResult bool) {
 
 	imageRef := docker_utils.BuildCompleteDockerImage(imageName, imageTag)
 	imageRefNew := docker_utils.BuildCompleteDockerImage(imageNameNew, imageTag)
@@ -93,7 +95,7 @@ func (p *Action) tagDockerImage(cli docker_utils.DockerClient, ctx *context.Cont
 
 	log.Infof("Tag %s created", imageRefNew)
 
-	if p.pushDockerImage(cli, ctx, imageNameNew, imageTagNew) {
+	if p.pushDockerImage(cli, ctx, imageNameNew, imageTagNew, username, password) {
 		return true, true
 	}
 
@@ -101,12 +103,16 @@ func (p *Action) tagDockerImage(cli docker_utils.DockerClient, ctx *context.Cont
 }
 
 // pushDockerImage -
-func (p *Action) pushDockerImage(cli docker_utils.DockerClient, ctx *context.Context, imageName, imageTag string) bool {
+func (p *Action) pushDockerImage(cli docker_utils.DockerClient, ctx *context.Context, imageName, imageTag, username, password string) bool {
 
 	// PLEASE NOTE: this is a required trick even with fake auth
 	pushOpt := types.ImagePushOptions{
 		All:          true,
 		RegistryAuth: "123",
+	}
+
+	if len(username) > 0 {
+		pushOpt.RegistryAuth = docker_utils.EncodeRegistryAuth(username, password)
 	}
 
 	imageRef := docker_utils.BuildCompleteDockerImage(imageName, imageTag)

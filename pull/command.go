@@ -31,6 +31,20 @@ func BuildCommand() *cli.Command {
 				Value:    ".",
 				Required: false,
 			},
+			cli.StringFlag{
+				Name:     "username, u",
+				Usage:    "User name for accessing a registry which requires authentication",
+				EnvVar:   "KORP_PULL_USERNAME",
+				Value:    "",
+				Required: false,
+			},
+			cli.StringFlag{
+				Name:     "password, p",
+				Usage:    "Password for accessing a registry which requires authentication",
+				EnvVar:   "KORP_PULL_PASSWORD",
+				Value:    "",
+				Required: false,
+			},
 		},
 		Action: action.Pull,
 	}
