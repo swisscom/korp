@@ -67,7 +67,7 @@ func getDockerClientMock(is is.I) docker_utils.DockerClient {
 	}
 
 	imageTagFunc := func(ctx context.Context, source string, target string) error {
-		is.Equal("docker.io/bitnami/minideb:latest", source)
+		is.Equal("bitnami/minideb:latest", source)
 		is.Equal("registry.example.com/bitnami/minideb:latest", target)
 		return nil
 	}

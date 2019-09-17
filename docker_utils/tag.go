@@ -6,23 +6,7 @@ import (
 
 // TagDockerImage - Tag Docker image
 func TagDockerImage(cli DockerClient, ctx *context.Context,
-	imageName, imageTag, imageNameNew, imageTagNew string, normalize bool) error {
-
-	if normalize {
-		canonicalImageName, normErr := NormalizeImageName(imageName)
-		if normErr != nil {
-			// log.Error(normErr)
-			return normErr
-		}
-		imageName = canonicalImageName
-
-		canonicalImageNameNew, normNewErr := NormalizeImageName(imageNameNew)
-		if normNewErr != nil {
-			// log.Error(normNewErr)
-			return normNewErr
-		}
-		imageNameNew = canonicalImageNameNew
-	}
+	imageName, imageTag, imageNameNew, imageTagNew string) error {
 
 	imageRef := BuildCompleteDockerImage(imageName, imageTag)
 	imageRefNew := BuildCompleteDockerImage(imageNameNew, imageTagNew)

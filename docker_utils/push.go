@@ -10,16 +10,7 @@ import (
 
 // PushDockerImage - Push Docker image to Docker registry
 func PushDockerImage(cli DockerClient, ctx *context.Context,
-	imageName, imageTag string, options *types.ImagePushOptions, normalize bool) error {
-
-	if normalize {
-		canonicalImageName, normErr := NormalizeImageName(imageName)
-		if normErr != nil {
-			// log.Error(normErr)
-			return normErr
-		}
-		imageName = canonicalImageName
-	}
+	imageName, imageTag string, options *types.ImagePushOptions) error {
 
 	imageRef := BuildCompleteDockerImage(imageName, imageTag)
 

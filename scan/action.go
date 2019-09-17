@@ -128,9 +128,10 @@ func (s *Action) listDockerImageReferences(filePath string) ([]string, error) {
 func (s *Action) buildNewDockerImage(dockerImageName, dockerImageTag, registry string) kustomize.Image {
 
 	trimmedDockerImageName := string_utils.TrimQuotes(dockerImageName)
+	normalizedImageName, _ := docker_utils.NormalizeImageName(trimmedDockerImageName)
 	image := kustomize.Image{
 		Name:    trimmedDockerImageName,
-		NewName: registry + "/" + trimmedDockerImageName,
+		NewName: registry + "/" + normalizedImageName,
 	}
 	if dockerImageTag != "" {
 		image.NewTag = string_utils.TrimQuotes(dockerImageTag)
