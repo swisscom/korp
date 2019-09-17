@@ -87,7 +87,7 @@ func (p *Action) tagDockerImage(cli docker_utils.DockerClient, ctx *context.Cont
 
 	imageRef := docker_utils.BuildCompleteDockerImage(imageName, imageTag)
 	imageRefNew := docker_utils.BuildCompleteDockerImage(imageNameNew, imageTag)
-	tagErr := docker_utils.TagDockerImage(cli, ctx, imageName, imageTag, imageNameNew, imageTagNew, false)
+	tagErr := docker_utils.TagDockerImage(cli, ctx, imageName, imageTag, imageNameNew, imageTagNew)
 	if tagErr != nil {
 		log.Errorf("Error tagging Docker image %s to %s: %s", imageRef, imageRefNew, tagErr.Error())
 		return false, false
@@ -116,7 +116,7 @@ func (p *Action) pushDockerImage(cli docker_utils.DockerClient, ctx *context.Con
 	}
 
 	imageRef := docker_utils.BuildCompleteDockerImage(imageName, imageTag)
-	pushErr := docker_utils.PushDockerImage(cli, ctx, imageName, imageTag, &pushOpt, false)
+	pushErr := docker_utils.PushDockerImage(cli, ctx, imageName, imageTag, &pushOpt)
 	if pushErr != nil {
 		log.Errorf("Error pushing Docker image %s: %s", imageRef, pushErr.Error())
 		return false
