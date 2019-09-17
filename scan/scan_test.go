@@ -78,9 +78,9 @@ func TestScanAction(t *testing.T) {
 			yamlErr := yaml.Unmarshal(data, &kustomization)
 			is.Equal(nil, yamlErr)                 // must be valid yaml
 			is.Equal(2, len(kustomization.Images)) // must produce two image elements
-			minideb := kust.Image{Name: "bitnami/minideb", NewName: "registry.example.com/bitnami/minideb", NewTag: "latest"}
+			minideb := kust.Image{Name: "bitnami/minideb", NewName: "registry.example.com/docker.io/bitnami/minideb", NewTag: "latest"}
 			is.True(containsImage(kustomization.Images, minideb)) // must contain patch for bitnami/minideb
-			postgres := kust.Image{Name: "bitnami/postgresql", NewName: "registry.example.com/bitnami/postgresql", NewTag: "11.3.0-debian-9-r38"}
+			postgres := kust.Image{Name: "bitnami/postgresql", NewName: "registry.example.com/docker.io/bitnami/postgresql", NewTag: "11.3.0-debian-9-r38"}
 			is.True(containsImage(kustomization.Images, postgres)) // must contain patch for bitnami/postgresql
 			return nil
 		}
