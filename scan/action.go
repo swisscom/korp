@@ -56,7 +56,7 @@ func (s IoImpl) WriteFile(filename string, data []byte, perm os.FileMode) error 
 	return s.writeFile(filename, data, perm)
 }
 
-// scan - Collect images referenced in all yaml files in the path and create a kustomization file
+// Scan - Collect images referenced in all yaml files in the path and create a kustomization file
 func (s *Action) Scan(c *cli.Context) error {
 
 	scanPath := c.String("files")
