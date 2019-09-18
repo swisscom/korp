@@ -4,7 +4,7 @@ A command line tool for pushing docker images referenced in Kubernetes yaml file
 
 ## Versioning
 
-Current version: `1.0.0`
+Current version: `1.0.1`
 
 ---
 
