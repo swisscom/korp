@@ -4,16 +4,12 @@ A command line tool for pushing docker images referenced in Kubernetes yaml file
 
 ## Versioning
 
-Current version: `1.0.1`
-
----
+Current version: `1.0.2`
 
 ## Installation
 
 1. Download the [latest release](https://github.com/swisscom/korp/releases) and unpack it
 2. Add the `korp` binary to your PATH
-
----
 
 ## Usage
 
@@ -70,8 +66,6 @@ korp push
    ```
    kubectl apply -k .
    ```
-
----
 
 ## A Complete Example
 
@@ -166,8 +160,6 @@ kustomize edit add resource **/!(kustomization).yaml
 kubectl apply -k .
 ```
 
----
-
 ## Autocompletion
 
 Source the `autocomplete-scripts/*_autocomplete` file in your `.bashrc | .zshrc` file while setting the `PROG` variable to the name of your program.
@@ -189,7 +181,3 @@ PROG=korp source autocomplete-scripts/zsh_autocomplete
 ./korp
 # now play with tab
 ```
-
-## Known issues
-
-- CRD image references not recognized (to be fixed in the next release)

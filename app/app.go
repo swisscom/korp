@@ -4,7 +4,6 @@ import (
 	"os"
 	"sort"
 
-	"github.com/swisscom/korp/all"
 	"github.com/swisscom/korp/autocompletion"
 	"github.com/swisscom/korp/pull"
 	"github.com/swisscom/korp/push"
@@ -15,7 +14,7 @@ import (
 )
 
 const (
-	version = "1.0.1"
+	version = "1.0.2"
 )
 
 type CliApp struct {
@@ -87,7 +86,6 @@ func addCommands(app *cli.App) {
 		*scan.BuildCommand(),
 		*pull.BuildCommand(),
 		*push.BuildCommand(),
-		*all.BuildCommand(),
 		*autocompletion.BuildCommand(),
 	}
 }
