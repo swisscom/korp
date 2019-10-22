@@ -6,14 +6,10 @@ A command line tool for pushing docker images referenced in Kubernetes yaml file
 
 Current version: `1.0.2`
 
----
-
 ## Installation
 
 1. Download the [latest release](https://github.com/swisscom/korp/releases) and unpack it
 2. Add the `korp` binary to your PATH
-
----
 
 ## Usage
 
@@ -70,8 +66,6 @@ korp push
    ```
    kubectl apply -k .
    ```
-
----
 
 ## A Complete Example
 
@@ -165,8 +159,6 @@ cd $HOME/tmp/istio/istio
 kustomize edit add resource **/!(kustomization).yaml
 kubectl apply -k .
 ```
-
----
 
 ## Autocompletion
 
