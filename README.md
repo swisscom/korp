@@ -181,7 +181,3 @@ PROG=korp source autocomplete-scripts/zsh_autocomplete
 ./korp
 # now play with tab
 ```
-
-## Known issues
-
-- CRD image references not recognized (to be fixed in the next release)
