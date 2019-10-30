@@ -15,6 +15,7 @@ import (
 	"github.com/swisscom/korp/scan"
 
 	log "github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 	"github.com/urfave/cli"
 )
 
@@ -59,16 +60,16 @@ func addGlobalFlags(app *cli.App) {
 			EnvVar: "KORP_GLOBAL_DEBUG",
 		},
 		cli.StringFlag{
-			Name:     "string-config, c",
+			Name:     "config-string, c",
 			Usage:    "Load configuration from `STRING`",
-			EnvVar:   "KORP_GLOBAL_STRING_CONFIG",
+			EnvVar:   "KORP_GLOBAL_CONFIG_STRING",
 			FilePath: "./config",
 		},
 		cli.StringFlag{
-			Name:     "config, f",
-			Usage:    "Load configuration from `FILE`",
-			EnvVar:   "KORP_GLOBAL_CONFIG",
-			FilePath: "./config",
+			Name:   "config-path, f",
+			Usage:  "`PATH` of the .env file containing configuration for korp",
+			EnvVar: "KORP_GLOBAL_CONFIG_PATH",
+			Value:  "./",
 		},
 	}
 }
@@ -79,7 +80,18 @@ func addBefore(app *cli.App) {
 	app.Before = func(c *cli.Context) error {
 
 		setDebug(c.Bool("debug"))
-		loadConfigAsString(c.String("string-config"))
+
+		// loadStringConfig(c.String("config-string"))
+		// _, strOk := os.LookupEnv("KORP_SCAN_FILES")
+		// if strOk {
+		// 	log.Info("KORP_SCAN_FILES loaded")
+		// }
+
+		// loadFileConfig(c.String("config-path"))
+		// _, fileOk := os.LookupEnv("KORP_PULL_KST_PATH")
+		// if fileOk {
+		// 	log.Info("KORP_PULL_KST_PATH loaded")
+		// }
 
 		return nil
 	}
@@ -93,8 +105,8 @@ func setDebug(debug bool) {
 	}
 }
 
-// loadConfigAsString -
-func loadConfigAsString(wholeConfig string) {
+// loadStringConfig -
+func loadStringConfig(wholeConfig string) {
 
 	if wholeConfig != "" {
 		log.Debugf("Whole config as string: %s\n", wholeConfig)
@@ -114,6 +126,22 @@ func loadConfigAsString(wholeConfig string) {
 		}
 	} else {
 		log.Debug("Config file not set or empty")
+	}
+}
+
+// TODO to be fixed, it does not work
+// loadFileConfig -
+func loadFileConfig(configPath string) {
+
+	viper.SetConfigName(".env")
+	viper.AddConfigPath(configPath)
+	err := viper.ReadInConfig()
+	if err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+			log.Warnf(".env config file not found in path %s", configPath)
+		} else {
+			log.Errorf("Error loading .env config file from path %s: %s", configPath, err)
+		}
 	}
 }
 
