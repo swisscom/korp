@@ -7,8 +7,8 @@ metadata:
     app: kiali
 type: Opaque
 data:
-  username: ZWFzdGVhbQ==
-  passphrase: ZWFzc2VjcmV0
+  username: <a user name in base64>
+  passphrase: <a passphrase in base64>
 ---
 apiVersion: kiali.io/v1alpha1
 kind: Kiali
@@ -26,7 +26,7 @@ spec:
     namespace: istio-system
     secret_name: kiali
     accessible_namespaces:
-      - '**'
+      - "**"
   external_services:
     grafana:
       url: ""

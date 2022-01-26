@@ -11,7 +11,7 @@ metadata:
     release: "postgres"
 type: Opaque
 data:
-  postgresql-password: "c2VjcmV0"
+  postgresql-password: "<something very secret in base64>"
 
 ---
 # Source: postgresql/templates/svc.yaml
@@ -26,9 +26,9 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-  - name: postgresql
-    port: 5432
-    targetPort: postgresql
+    - name: postgresql
+      port: 5432
+      targetPort: postgresql
   selector:
     app: postgresql
     release: "postgres"
@@ -66,87 +66,87 @@ spec:
       securityContext:
         fsGroup: 1001
       initContainers:
-      - name: init-chmod-data
-        image: bitnami/minideb:latest
-        imagePullPolicy: "Always"
-        resources:
-          requests:
-            cpu: 250m
-            memory: 256Mi
-        command:
-          - sh
-          - -c
-          - |
-            mkdir -p /bitnami/postgresql/data
-            chmod 700 /bitnami/postgresql/data
-            find /bitnami/postgresql -mindepth 1 -maxdepth 1 -not -name ".snapshot" -not -name "lost+found" | \
-              xargs chown -R 1001:1001
-        securityContext:
-          runAsUser: 0
-        volumeMounts:
-        - name: data
-          mountPath: /bitnami/postgresql
-          subPath: ""
-      containers:
-      - name: postgresql
-        image: bitnami/postgresql:11.3.0-debian-9-r38
-        imagePullPolicy: "IfNotPresent"
-        resources:
-          requests:
-            cpu: 250m
-            memory: 256M
-          limits:
-            cpu: 500m
-            memory: 512M
-        securityContext:
-          runAsUser: 1001
-        env:
-        - name: BITNAMI_DEBUG
-          value: "false"
-        - name: POSTGRESQL_PORT_NUMBER
-          value: "5432"
-        - name: PGDATA
-          value: "/bitnami/postgresql/data"
-        - name: POSTGRES_USER
-          value: "user"
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: postgresql
-              key: postgresql-password
-        - name: POSTGRES_DB
-          value: "server-app"
-        ports:
-        - name: postgresql
-          containerPort: 5432
-        livenessProbe:
-          exec:
-            command:
-            - sh
-            - -c
-            - exec pg_isready -U "user" -d "server-app" -h 127.0.0.1 -p 5432
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 5
-          successThreshold: 1
-          failureThreshold: 6
-        readinessProbe:
-          exec:
-            command:
+        - name: init-chmod-data
+          image: bitnami/minideb:latest
+          imagePullPolicy: "Always"
+          resources:
+            requests:
+              cpu: 250m
+              memory: 256Mi
+          command:
             - sh
             - -c
             - |
-              pg_isready -U "user" -d "server-app" -h 127.0.0.1 -p 5432
-              [ -f /opt/bitnami/postgresql/tmp/.initialized ]
-          initialDelaySeconds: 5
-          periodSeconds: 10
-          timeoutSeconds: 5
-          successThreshold: 1
-          failureThreshold: 6
-        volumeMounts:
-        - name: data
-          mountPath: /bitnami/postgresql
-          subPath: ""
+              mkdir -p /bitnami/postgresql/data
+              chmod 700 /bitnami/postgresql/data
+              find /bitnami/postgresql -mindepth 1 -maxdepth 1 -not -name ".snapshot" -not -name "lost+found" | \
+                xargs chown -R 1001:1001
+          securityContext:
+            runAsUser: 0
+          volumeMounts:
+            - name: data
+              mountPath: /bitnami/postgresql
+              subPath: ""
+      containers:
+        - name: postgresql
+          image: bitnami/postgresql:11.3.0-debian-9-r38
+          imagePullPolicy: "IfNotPresent"
+          resources:
+            requests:
+              cpu: 250m
+              memory: 256M
+            limits:
+              cpu: 500m
+              memory: 512M
+          securityContext:
+            runAsUser: 1001
+          env:
+            - name: BITNAMI_DEBUG
+              value: "false"
+            - name: POSTGRESQL_PORT_NUMBER
+              value: "5432"
+            - name: PGDATA
+              value: "/bitnami/postgresql/data"
+            - name: POSTGRES_USER
+              value: "user"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql
+                  key: postgresql-password
+            - name: POSTGRES_DB
+              value: "server-app"
+          ports:
+            - name: postgresql
+              containerPort: 5432
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - exec pg_isready -U "user" -d "server-app" -h 127.0.0.1 -p 5432
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 6
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - |
+                  pg_isready -U "user" -d "server-app" -h 127.0.0.1 -p 5432
+                  [ -f /opt/bitnami/postgresql/tmp/.initialized ]
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 6
+          volumeMounts:
+            - name: data
+              mountPath: /bitnami/postgresql
+              subPath: ""
   volumeClaimTemplates:
     - metadata:
         name: data
