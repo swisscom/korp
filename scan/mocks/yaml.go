@@ -15,7 +15,7 @@ const YamlTwoImages = `
 	    release: "postgres"
 	type: Opaque
 	data:
-	  postgresql-password: "c2VjcmV0"
+	  postgresql-password: "<a password in base64>"
 
 	---
 	# Source: postgresql/templates/svc.yaml
